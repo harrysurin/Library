@@ -12,6 +12,8 @@ public class Book
     [Required]
     public string ISBN {get; set;}
 
+    public Guid? AuthorId {get; set;}
+
     public Author? Author {get; set;}
 
     [Required]
