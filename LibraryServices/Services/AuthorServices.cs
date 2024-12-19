@@ -1,8 +1,8 @@
-
 using LibraryRepository.Models;
+using LibraryServices.Interfaces;
 
 
-public class AuthorService
+public class AuthorService : IAuthorServices
 {
     private readonly IUnitOfWork _unitOfWork;
     public AuthorService(IUnitOfWork unitOfWork)
@@ -13,8 +13,12 @@ public class AuthorService
     public async Task<IEnumerable<Author>> GetAllAsync()
         => await _unitOfWork.Authors.GetAllAsync();
     
-    public async Task<Author?> GetByIdAsync(int id) => await _unitOfWork.Authors.GetByIdAsync(id);
-    public async Task AddAsync(Author author) => await _unitOfWork.Authors.AddAsync(author);
+    public async Task<Author?> GetByIdAsync(Guid id) => await _unitOfWork.Authors.GetByIdAsync(id);
+    public async Task AddAsync(Author author)
+    { 
+        await _unitOfWork.Authors.AddAsync(author);
+        await _unitOfWork.CompleteAsync();
+    }
 
     public async Task Update(Author author)
     {
@@ -33,9 +37,6 @@ public class AuthorService
         return await _unitOfWork.Authors.FirstOrDefaultAsync(x => x.Name == AuthorName);
     }
 
-    public async Task<List<Book>> GetBooksByAuthor(Guid authorId) // move it to BookServices
-    {
-        return await _unitOfWork.Books.ToListByPredicateAsync(x => x.AuthorId == authorId);
-    }
+
 
 }
