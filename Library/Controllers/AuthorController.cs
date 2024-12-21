@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using LibraryRepository.Models;
 using LibraryServices.Interfaces;
 using Library.ViewModels;
+using AutoMapper;
 
 namespace Library.AddControllers
 {
@@ -22,12 +23,7 @@ namespace Library.AddControllers
         [HttpPost]
         public async Task<IActionResult> CreateAuthor(AuthorViewModel author)
         {
-            Author objAuthor = new Author()
-            {
-                AuthorId = new Guid(),
-                Name = author.Name,
-                DateOfBirth = author.DateOfBirth
-            };
+            var objAuthor = Mapper.Map<AuthorViewModel, Author>(author);
             await this._authorServices.AddAsync(objAuthor);
             return Ok();
         }
@@ -51,14 +47,36 @@ namespace Library.AddControllers
         [HttpPut]
         public async Task<IActionResult> Update(AuthorViewModel author)
         {
-            Author objAuthor = new Author()
-            {
-                AuthorId = author.AuthorId,
-                Name = author.Name,
-                DateOfBirth = author.DateOfBirth
-            };
+            Author objAuthor = Mapper.Map<AuthorViewModel, Author>(author);
             await this._authorServices.Update(objAuthor);
             return Ok();
+        }
+
+        [HttpGet("FindByID")]
+        public async Task<ActionResult<AuthorViewModel>> GetById(Guid authorId)
+        {
+            var objAuthor = await this._authorServices.GetByIdAsync(authorId);
+            if(objAuthor != null) 
+            {
+                var author = Mapper.Map<Author, AuthorViewModel>(objAuthor);
+                return author;
+            }
+            else
+            throw new ArgumentException("The authoe isn't exist");
+        }
+
+        [HttpGet("FindByName")]
+        public async Task<ActionResult<AuthorViewModel>> GetByName(string name)
+        {
+            var objAuthor = await this._authorServices.GetAuthorByName(name);
+            if(objAuthor != null) 
+            {
+                var author = Mapper.Map<Author, AuthorViewModel>(objAuthor);
+                return author;
+            }
+            else
+            throw new ArgumentException("The authoe isn't exist");
+        
         }
 
     }

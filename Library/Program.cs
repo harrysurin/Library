@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using LibraryRepository.Models;
 using LibraryServices.Interfaces;
 using Microsoft.OpenApi.Models;
+using AutoMapper;
+using Library.ViewModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,15 @@ builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<IAuthorServices, AuthorService>();
 builder.Services.AddTransient<IBookServices, BookService>();
 builder.Services.AddTransient<IRentHistoryServices, RentHistoryService>();
+
+Mapper.Initialize(
+        cfg =>
+        {
+            cfg.CreateMap<Author, AuthorViewModel>();
+            cfg.CreateMap<AuthorViewModel, Author>();
+
+        });
+
 
 builder.Services.AddControllers();
 builder.Services.AddAuthorization();
