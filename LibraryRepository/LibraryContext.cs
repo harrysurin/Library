@@ -10,17 +10,17 @@ public class LibraryContext : IdentityDbContext<User, Role, Guid>
     public DbSet<Book> Books => Set<Book>();
     public DbSet<RentHistory> RentHistory => Set<RentHistory>();
 
-    public LibraryContext() => Database.EnsureCreated();
+    public LibraryContext() : base() {}
 
     public LibraryContext(DbContextOptions<LibraryContext> options)
         : base(options)
-    {
-        Database.EnsureCreated();
-    }
+    {}
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        var dbSeeder = new DbSeeder(modelBuilder);
+        dbSeeder.SeedRoles();
         
     }
 }
