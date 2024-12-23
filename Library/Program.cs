@@ -12,8 +12,6 @@ builder.Services.AddDbContext<LibraryContext>(options =>
     options.UseSqlServer(connectionString));
 
 
-
-
 builder.Services.AddTransient<IRepository<Author>, Repository<Author>>();
 builder.Services.AddTransient<IRepository<Book>, Repository<Book>>();
 builder.Services.AddTransient<IRepository<RentHistory>, Repository<RentHistory>>();
@@ -21,12 +19,17 @@ builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<IAuthorServices, AuthorService>();
 builder.Services.AddTransient<IBookServices, BookService>();
 builder.Services.AddTransient<IRentHistoryServices, RentHistoryService>();
+builder.Services.AddTransient<IUserServices, UserServices>();
 
 Mapper.Initialize(
         cfg =>
         {
             cfg.CreateMap<Author, AuthorViewModel>();
             cfg.CreateMap<AuthorViewModel, Author>();
+
+            cfg.CreateMap<Book, BookViewModel>();
+            cfg.CreateMap<BookViewModel, Book>();
+            
 
         });
 
@@ -79,5 +82,25 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.MapControllers();
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        string adminEmail = "admin@mail.com";
+        string adminPassword = "adminPassword1!!";
+
+        var userServices = services.GetRequiredService<IUserServices>();
+        await RoleInitializer.InitializeAsync(userServices, adminEmail, adminPassword);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database.");
+    }
+}
+
 app.Run();
 
