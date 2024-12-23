@@ -3,8 +3,9 @@ using LibraryRepository.Models;
 using LibraryServices.Interfaces;
 using Library.ViewModels;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 
-namespace Library.AddControllers
+namespace Library.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -20,6 +21,8 @@ namespace Library.AddControllers
             _authorServices = authorServices;
         }
 
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateAuthor(AuthorViewModel author)
         {
@@ -28,22 +31,25 @@ namespace Library.AddControllers
             return Ok();
         }
 
+        [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Author>>> GetAll()
+        public async Task<ActionResult<IEnumerable<AuthorViewModel>>> GetAll()
         {
-            return Ok(await this._authorServices.GetAllAsync());
+           var listOfAuthor =  await this._authorServices.GetAllAsync();
+           var listOfView = Mapper.Map<IEnumerable<Author>, IEnumerable<AuthorViewModel>>(listOfAuthor);
+           return Ok(listOfView);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid authorId)
         {
             var author = await this._authorServices.GetByIdAsync(authorId);
             if(author != null) await this._authorServices.Delete(author);
-            else
-            throw new ArgumentException("The authoe isn't exist");
             return Ok();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<IActionResult> Update(AuthorViewModel author)
         {
@@ -52,6 +58,7 @@ namespace Library.AddControllers
             return Ok();
         }
 
+        [AllowAnonymous]
         [HttpGet("FindByID")]
         public async Task<ActionResult<AuthorViewModel>> GetById(Guid authorId)
         {
@@ -61,10 +68,10 @@ namespace Library.AddControllers
                 var author = Mapper.Map<Author, AuthorViewModel>(objAuthor);
                 return author;
             }
-            else
-            throw new ArgumentException("The authoe isn't exist");
+            return Ok();
         }
 
+        [AllowAnonymous]
         [HttpGet("FindByName")]
         public async Task<ActionResult<AuthorViewModel>> GetByName(string name)
         {
@@ -74,8 +81,7 @@ namespace Library.AddControllers
                 var author = Mapper.Map<Author, AuthorViewModel>(objAuthor);
                 return author;
             }
-            else
-            throw new ArgumentException("The authoe isn't exist");
+            return Ok();
         
         }
 
