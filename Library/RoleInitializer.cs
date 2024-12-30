@@ -18,7 +18,20 @@ public class RoleInitializer
             IdentityResult result = await userServices.AddAsync(admin, adminPassword);
             if (result.Succeeded)
             {
-                await userServices.AddToRoleAsync(admin, "admin");
+                var savedUser = await userServices.FindByEmailAsync(adminEmail);
+                if (savedUser == null)
+                {
+                    Console.WriteLine("Admin user not found, cannot assign admin role to the user");
+                    return;
+                }
+
+                var roleAssignmentResult = await userServices.AddToRoleAsync(savedUser, "Admin");
+
+                if (!roleAssignmentResult.Succeeded)
+                {
+                    Console.WriteLine("Cannot assign admin role:");
+                    Console.WriteLine(roleAssignmentResult.Errors);
+                }
             }
         }
     }

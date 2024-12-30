@@ -32,6 +32,6 @@ public class UserServices : IUserServices
     public async Task<bool> IsInRoleAsync(User user, string rolename) 
             => await userManager.IsInRoleAsync(user, rolename);
     
-    public async Task AddToRoleAsync(User user, string rolename) 
+    public async Task<IdentityResult> AddToRoleAsync(User user, string rolename) 
             => await userManager.AddToRoleAsync(user, rolename);
 }

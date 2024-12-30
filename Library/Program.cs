@@ -66,6 +66,7 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 builder.Services.AddIdentityApiEndpoints<User>()
+    .AddRoles<Role>()
     .AddEntityFrameworkStores<LibraryContext>();
 
 var app = builder.Build();

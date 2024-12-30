@@ -16,6 +16,6 @@ namespace LibraryServices.Interfaces
         Task<User?> FindByEmailAsync(string email);
         Task ChangePassword(User user, string oldPassword, string newPassword);
         Task<bool> IsInRoleAsync(User user, string rolename);
-        Task AddToRoleAsync(User user, string rolename);
+        Task<IdentityResult> AddToRoleAsync(User user, string rolename);
     }
 }
