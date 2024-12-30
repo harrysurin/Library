@@ -43,14 +43,14 @@ public class RentHistoryService : IRentHistoryServices
         
     }
 
-    public async Task<bool> AccessToReturn(Guid bookId)
+    public async Task<bool> AccessToRent(Guid bookId)
     {
         var rentHistory = await _unitOfWork.RentHistory
             .FirstOrDefaultAsync(x => x.BookId == bookId && x.DateOfReturn == null);
 
         if(rentHistory == null) return false;
         else
-        return false;
+        return true;
     }
 
     public async Task<List<RentHistory>> UserRentHistory(Guid userId)
@@ -62,6 +62,14 @@ public class RentHistoryService : IRentHistoryServices
     {
         _unitOfWork.RentHistory.Delete(rentHistory);
         await _unitOfWork.CompleteAsync();
+    }
+
+    public async Task<RentHistory?> GetByIdAsync(Guid id) => await _unitOfWork.RentHistory.GetByIdAsync(id);
+
+    public PaginatedList<RentHistory> PaginatedList(int pageIndex, int pageSize, Guid userId)
+    {
+        return _unitOfWork.RentHistory
+            .GetAllPaginatedAsync(pageIndex, pageSize, x => x.UserId == userId, x => x.DateOfRent);
     }
 
 }

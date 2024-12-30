@@ -37,6 +37,10 @@ public class AuthorService : IAuthorServices
         return await _unitOfWork.Authors.FirstOrDefaultAsync(x => x.Name == AuthorName);
     }
 
-
+    public PaginatedList<Author> PaginatedList(int pageIndex, int pageSize)
+    {
+        return _unitOfWork.Authors
+            .GetAllPaginatedAsync(pageIndex, pageSize, null , x => x.Name);
+    }
 
 }

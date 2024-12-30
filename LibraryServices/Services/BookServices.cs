@@ -43,4 +43,27 @@ public class BookService : IBookServices
         return await _unitOfWork.Books.ToListByPredicateAsync(x => x.AuthorId == authorId);
     }
 
+    public PaginatedList<Book> PaginatedListByAuthorId(int pageIndex, int pageSize, Guid authorId)
+    {
+        return _unitOfWork.Books
+            .GetAllPaginatedAsync(pageIndex, pageSize, x => x.AuthorId == authorId, x => x.Title);
+    }
+
+    public PaginatedList<Book> PaginatedListByGenre(int pageIndex, int pageSize, string genre)
+    {
+        return _unitOfWork.Books
+            .GetAllPaginatedAsync(pageIndex, pageSize, x => x.Genre == genre, x => x.Title);
+    }
+
+    public PaginatedList<Book> PaginatedListByName(int pageIndex, int pageSize, string book)
+    {
+        return _unitOfWork.Books
+            .GetAllPaginatedAsync(pageIndex, pageSize, x => x.Title == book, x => x.Title);
+    }
+
+    public PaginatedList<Book> PaginatedList(int pageIndex, int pageSize)
+    {
+        return _unitOfWork.Books
+            .GetAllPaginatedAsync(pageIndex, pageSize, null , x => x.Title);
+    }
 }

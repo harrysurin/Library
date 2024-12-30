@@ -6,8 +6,10 @@ namespace LibraryServices.Interfaces
     {
         Task BookDistribution(Guid userId, Guid bookId);
         Task ReturnBook(Guid bookId, Guid userId);
-        Task<bool> AccessToReturn(Guid bookId);
+        Task<bool> AccessToRent(Guid bookId);
         Task<List<RentHistory>> UserRentHistory(Guid userId);
         Task Delete(RentHistory rentHistory);
+        Task<RentHistory?> GetByIdAsync(Guid id);
+        PaginatedList<RentHistory> PaginatedList(int pageIndex, int pageSize, Guid userId);
     }
 }
