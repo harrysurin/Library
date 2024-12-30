@@ -19,4 +19,26 @@ public class Repository<T> : IRepository<T> where T : class
         => await _dbSet.FirstOrDefaultAsync(predicate);
     public async Task<List<T>> ToListByPredicateAsync(Expression<Func<T, bool>> predicate) 
         => await _dbSet.Where(predicate).ToListAsync();
+
+    public PaginatedList<T> GetAllPaginatedAsync<TKey>(int pageIndex, int pageSize,
+                 Expression<Func<T, bool>>? filterPredicate, Func<T, TKey> orderPredicate)
+    {
+        var items = _dbSet
+            .AsQueryable();
+        if (filterPredicate != null)
+        {
+            items = items.Where(filterPredicate);
+        }
+        var itemsAsList = items
+            .OrderBy(orderPredicate)
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        int count = itemsAsList.Count;
+        int totalPages = (int)Math.Ceiling(count / (double)pageSize);
+
+        return new PaginatedList<T>(itemsAsList, pageIndex, totalPages);
+    }
+    
 }

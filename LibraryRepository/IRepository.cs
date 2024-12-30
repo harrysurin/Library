@@ -9,4 +9,7 @@ public interface IRepository<T> where T : class
     void Delete(T entity);
     Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
     Task<List<T>> ToListByPredicateAsync(Expression<Func<T, bool>> predicate);
+
+    PaginatedList<T> GetAllPaginatedAsync<TKey>(int pageIndex, int pageSize,
+                 Expression<Func<T, bool>>? filterPredicate, Func<T, TKey> orderPredicate);
 }
