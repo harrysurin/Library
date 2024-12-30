@@ -33,11 +33,15 @@ namespace Library.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AuthorViewModel>>> GetAll()
+        public ActionResult<PaginatedList<AuthorViewModel>> GetAll(int pageIndex, int pageSize)
         {
-           var listOfAuthor =  await this._authorServices.GetAllAsync();
-           var listOfView = Mapper.Map<IEnumerable<Author>, IEnumerable<AuthorViewModel>>(listOfAuthor);
-           return Ok(listOfView);
+            var listOfAuthor =  this._authorServices.PaginatedList(pageIndex, pageSize);
+            var paginatedViewModelList = new PaginatedList<AuthorViewModel>(
+                Mapper.Map<List<Author>, List<AuthorViewModel>>(listOfAuthor.Items),
+                listOfAuthor.PageIndex,
+                listOfAuthor.TotalPages);
+            
+            return Ok();
         }
 
         [Authorize(Roles = "Admin")]
