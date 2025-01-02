@@ -41,7 +41,7 @@ namespace Library.Controllers
                 listOfAuthor.PageIndex,
                 listOfAuthor.TotalPages);
             
-            return Ok();
+            return Ok(paginatedViewModelList);
         }
 
         [Authorize(Roles = "Admin")]
