@@ -1,13 +1,17 @@
+using FluentValidation;
 using LibraryRepository.Models;
 using LibraryServices.Interfaces;
+using LibraryServices.Validation;
 
 
 public class AuthorService : IAuthorServices
 {
     private readonly IUnitOfWork _unitOfWork;
-    public AuthorService(IUnitOfWork unitOfWork)
+    private readonly AuthorValidator _validator;
+    public AuthorService(IUnitOfWork unitOfWork, AuthorValidator validator)
     {
         _unitOfWork = unitOfWork;
+        _validator = validator;
     }
 
     public async Task<IEnumerable<Author>> GetAllAsync()
@@ -15,13 +19,15 @@ public class AuthorService : IAuthorServices
     
     public async Task<Author?> GetByIdAsync(Guid id) => await _unitOfWork.Authors.GetByIdAsync(id);
     public async Task AddAsync(Author author)
-    { 
+    {   
+        _validator.ValidateAndThrow(author);
         await _unitOfWork.Authors.AddAsync(author);
         await _unitOfWork.CompleteAsync();
     }
 
     public async Task Update(Author author)
     {
+        _validator.ValidateAndThrow(author);
         _unitOfWork.Authors.Update(author);
         await _unitOfWork.CompleteAsync();
     }
@@ -34,13 +40,15 @@ public class AuthorService : IAuthorServices
 
     public async Task<Author?> GetAuthorByName(string AuthorName)
     {
-        return await _unitOfWork.Authors.FirstOrDefaultAsync(x => x.Name == AuthorName);
+        return await _unitOfWork.Authors.FirstOrDefaultAsync(x 
+            => x.FirstName == AuthorName || x.LastName == AuthorName
+                || (x.FirstName + " " + x.LastName).Contains(AuthorName));
     }
 
     public PaginatedList<Author> PaginatedList(int pageIndex, int pageSize)
     {
         return _unitOfWork.Authors
-            .GetAllPaginatedAsync(pageIndex, pageSize, null , x => x.Name);
+            .GetAllPaginatedAsync(pageIndex, pageSize, null , x => x.LastName);
     }
 
 }

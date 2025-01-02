@@ -2,14 +2,19 @@ using System.IO.Compression;
 using System.Runtime.CompilerServices;
 using LibraryRepository.Models;
 using LibraryServices.Interfaces;
+using LibraryServices.Validation;
+using FluentValidation;
 
 
 public class RentHistoryService : IRentHistoryServices
 {
     private readonly IUnitOfWork _unitOfWork;
-    public RentHistoryService(IUnitOfWork unitOfWork)
+    private readonly RentHistoryValidator _validator;
+
+    public RentHistoryService(IUnitOfWork unitOfWork, RentHistoryValidator validator)
     {
         _unitOfWork = unitOfWork;
+        _validator = validator;
     }
 
     public async Task BookDistribution(Guid userId, Guid bookId)
@@ -22,6 +27,7 @@ public class RentHistoryService : IRentHistoryServices
             DateOfRent = DateTime.Now,
             DateOfReturn = null
         };
+        _validator.ValidateAndThrow(rentHistory);
         await _unitOfWork.RentHistory.AddAsync(rentHistory);
         await _unitOfWork.CompleteAsync();
     }

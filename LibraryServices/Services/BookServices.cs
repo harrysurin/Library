@@ -1,13 +1,17 @@
 using LibraryRepository.Models;
 using LibraryServices.Interfaces;
+using LibraryServices.Validation;
+using FluentValidation;
 
 
 public class BookService : IBookServices
 {
     private readonly IUnitOfWork _unitOfWork;
-    public BookService(IUnitOfWork unitOfWork)
+    private readonly BookValidator _validator;
+    public BookService(IUnitOfWork unitOfWork, BookValidator validator)
     {
         _unitOfWork = unitOfWork;
+        _validator = validator;
     }
 
     public async Task<IEnumerable<Book>> GetAllAsync()
@@ -15,6 +19,7 @@ public class BookService : IBookServices
     
     public async Task AddAsync(Book book)
     { 
+        _validator.ValidateAndThrow(book);
         await _unitOfWork.Books.AddAsync(book);
         await _unitOfWork.CompleteAsync();
     }
@@ -23,6 +28,7 @@ public class BookService : IBookServices
 
     public async Task Update(Book book)
     {
+        _validator.ValidateAndThrow(book);
         _unitOfWork.Books.Update(book);
         await _unitOfWork.CompleteAsync();
     }
