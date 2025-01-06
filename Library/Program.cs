@@ -4,6 +4,7 @@ using LibraryServices.Interfaces;
 using Microsoft.OpenApi.Models;
 using AutoMapper;
 using Library.ViewModels;
+using LibraryServices.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,11 +16,18 @@ builder.Services.AddDbContext<LibraryContext>(options =>
 builder.Services.AddTransient<IRepository<Author>, Repository<Author>>();
 builder.Services.AddTransient<IRepository<Book>, Repository<Book>>();
 builder.Services.AddTransient<IRepository<RentHistory>, Repository<RentHistory>>();
+builder.Services.AddTransient<IPictureRepository<BookPictures>, PictureRepository>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+
 builder.Services.AddTransient<IAuthorServices, AuthorService>();
 builder.Services.AddTransient<IBookServices, BookService>();
 builder.Services.AddTransient<IRentHistoryServices, RentHistoryService>();
 builder.Services.AddTransient<IUserServices, UserServices>();
+builder.Services.AddTransient<IBookPicturesServices, BookPicturesServices>();
+
+builder.Services.AddTransient<AuthorValidator>();
+builder.Services.AddTransient<BookValidator>();
+builder.Services.AddTransient<RentHistoryValidator>();
 
 Mapper.Initialize(
         cfg =>
@@ -29,6 +37,9 @@ Mapper.Initialize(
 
             cfg.CreateMap<Book, BookViewModel>();
             cfg.CreateMap<BookViewModel, Book>();
+
+            cfg.CreateMap<BookPictureViewModel, BookPictures>();
+            cfg.CreateMap<BookPictures, BookPictureViewModel>();
             
 
         });
