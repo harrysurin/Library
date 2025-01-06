@@ -6,7 +6,7 @@ namespace LibraryRepository.Models;
 public class RentHistory
 {
     [Key]
-    public Guid Id { get; set; }
+    public Guid Id {get; set;} = Guid.NewGuid();
     public Guid UserId {get; set;}
     public Guid BookId {get; set;}
     public DateTime DateOfRent {get; set;}
