@@ -8,7 +8,7 @@ using LibraryServices.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = "Server=localhost\\SQLEXPRESS;Database=LibraryApp;Trusted_Connection=True;TrustServerCertificate=True";
+var connectionString = builder.Configuration["ConnectionString"];
 builder.Services.AddDbContext<LibraryContext>(options =>
     options.UseSqlServer(connectionString));
 
