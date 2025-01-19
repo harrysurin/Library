@@ -4,6 +4,7 @@ namespace LibraryServices.Interfaces
 {
     public interface IRentHistoryServices
     {
+        Task<IEnumerable<RentHistory>> GetAllAsync();
         Task BookDistribution(Guid userId, Guid bookId);
         Task ReturnBook(Guid bookId, Guid userId);
         Task<bool> AccessToRent(Guid bookId);

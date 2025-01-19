@@ -17,6 +17,9 @@ public class RentHistoryService : IRentHistoryServices
         _validator = validator;
     }
 
+    public async Task<IEnumerable<RentHistory>> GetAllAsync()
+    => await _unitOfWork.RentHistory.GetAllAsync();
+
     public async Task BookDistribution(Guid userId, Guid bookId)
     {
         RentHistory rentHistory = new RentHistory()
