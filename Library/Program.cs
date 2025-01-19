@@ -24,6 +24,7 @@ builder.Services.AddTransient<IBookServices, BookService>();
 builder.Services.AddTransient<IRentHistoryServices, RentHistoryService>();
 builder.Services.AddTransient<IUserServices, UserServices>();
 builder.Services.AddTransient<IBookPicturesServices, BookPicturesServices>();
+builder.Services.AddTransient<IEmailServices, EmailServices>();
 
 builder.Services.AddTransient<AuthorValidator>();
 builder.Services.AddTransient<BookValidator>();
