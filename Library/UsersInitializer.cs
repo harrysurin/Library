@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using LibraryRepository.Models;
 using LibraryServices.Interfaces;
 
-public class RoleInitializer
+public class UsersInitializer
 {
     public static async Task InitializeAsync(IUserServices userServices,
         string adminEmail, string adminPassword)

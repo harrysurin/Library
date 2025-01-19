@@ -60,7 +60,7 @@ namespace Library.Controllers
         [HttpGet]
         public ActionResult<PaginatedList<BookViewModel>> GetAll(int pageIndex, int pageSize)
         {
-            var listOfBook =  this.bookServices.PaginatedList(pageIndex, pageSize);
+            var listOfBook =  this.bookServices.GetPaginatedList(pageIndex, pageSize);
             var paginatedViewModelList = new PaginatedList<BookViewModel>(
                 Mapper.Map<List<Book>, List<BookViewModel>>(listOfBook.Items),
                 listOfBook.PageIndex,
@@ -100,7 +100,7 @@ namespace Library.Controllers
         public async Task<ActionResult<PaginatedList<BookViewModel>>> GetByAuthor(int pageIndex, int pageSize, string name)
         {
             Author? author = await this.authorServices.GetAuthorByName(name);
-            var listOfBook =  this.bookServices.PaginatedListByAuthorId(pageIndex, pageSize, author.AuthorId);
+            var listOfBook =  this.bookServices.GetPaginatedListByAuthorId(pageIndex, pageSize, author.AuthorId);
             var paginatedViewModelList = new PaginatedList<BookViewModel>(
                 Mapper.Map<List<Book>, List<BookViewModel>>(listOfBook.Items),
                 listOfBook.PageIndex,
@@ -113,7 +113,7 @@ namespace Library.Controllers
         [HttpGet("GetByGenre")]
         public ActionResult<PaginatedList<BookViewModel>> GetByGenre(int pageIndex, int pageSize, string genre)
         {
-            var listOfBook =  this.bookServices.PaginatedListByGenre(pageIndex, pageSize, genre);
+            var listOfBook =  this.bookServices.GetPaginatedListByGenre(pageIndex, pageSize, genre);
             var paginatedViewModelList = new PaginatedList<BookViewModel>(
                 Mapper.Map<List<Book>, List<BookViewModel>>(listOfBook.Items),
                 listOfBook.PageIndex,
@@ -126,7 +126,7 @@ namespace Library.Controllers
         [HttpGet("GetByTitle")]
         public ActionResult<PaginatedList<BookViewModel>> GetByTitle(int pageIndex, int pageSize, string title)
         {
-            var listOfBook =  this.bookServices.PaginatedListByName(pageIndex, pageSize, title);
+            var listOfBook =  this.bookServices.GetPaginatedListByName(pageIndex, pageSize, title);
             var paginatedViewModelList = new PaginatedList<BookViewModel>(
                 Mapper.Map<List<Book>, List<BookViewModel>>(listOfBook.Items),
                 listOfBook.PageIndex,
@@ -139,7 +139,7 @@ namespace Library.Controllers
         [HttpGet("AccessToRent")]
         public async Task<ActionResult<Boolean>> AccessToRent(Guid bookId)
         {
-            return Ok(await this.rentHistory.AccessToRent(bookId));
+            return Ok(await this.rentHistory.IsAvailableToRent(bookId));
         }
 
         

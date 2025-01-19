@@ -45,10 +45,10 @@ public class AuthorService : IAuthorServices
                 || (x.FirstName + " " + x.LastName).Contains(AuthorName));
     }
 
-    public PaginatedList<Author> PaginatedList(int pageIndex, int pageSize)
+    public PaginatedList<Author> GetPaginatedList(int pageIndex, int pageSize)
     {
         return _unitOfWork.Authors
-            .GetAllPaginatedAsync(pageIndex, pageSize, null , x => x.LastName);
+            .GetPaginatedListAsync(pageIndex, pageSize, null , x => x.LastName);
     }
 
 }

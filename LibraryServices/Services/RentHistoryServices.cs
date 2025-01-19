@@ -20,7 +20,7 @@ public class RentHistoryService : IRentHistoryServices
     public async Task<IEnumerable<RentHistory>> GetAllAsync()
     => await _unitOfWork.RentHistory.GetAllAsync();
 
-    public async Task BookDistribution(Guid userId, Guid bookId)
+    public async Task BookRent(Guid userId, Guid bookId)
     {
         RentHistory rentHistory = new RentHistory()
         {
@@ -52,7 +52,7 @@ public class RentHistoryService : IRentHistoryServices
         
     }
 
-    public async Task<bool> AccessToRent(Guid bookId)
+    public async Task<bool> IsAvailableToRent(Guid bookId)
     {
         var rentHistory = await _unitOfWork.RentHistory
             .FirstOrDefaultAsync(x => x.BookId == bookId && x.DateOfReturn == null);
@@ -62,7 +62,7 @@ public class RentHistoryService : IRentHistoryServices
         return true;
     }
 
-    public async Task<List<RentHistory>> UserRentHistory(Guid userId)
+    public async Task<List<RentHistory>> GetUserRentHistory(Guid userId)
     {
         return await _unitOfWork.RentHistory.ToListByPredicateAsync(x => x.UserId == userId);
     }
@@ -75,10 +75,10 @@ public class RentHistoryService : IRentHistoryServices
 
     public async Task<RentHistory?> GetByIdAsync(Guid id) => await _unitOfWork.RentHistory.GetByIdAsync(id);
 
-    public PaginatedList<RentHistory> PaginatedList(int pageIndex, int pageSize, Guid userId)
+    public PaginatedList<RentHistory> GetPaginatedList(int pageIndex, int pageSize, Guid userId)
     {
         return _unitOfWork.RentHistory
-            .GetAllPaginatedAsync(pageIndex, pageSize, x => x.UserId == userId, x => x.DateOfRent);
+            .GetPaginatedListAsync(pageIndex, pageSize, x => x.UserId == userId, x => x.DateOfRent);
     }
 
 }

@@ -34,7 +34,7 @@ namespace Library.Controllers
         {
             User? user = await userServices.FindByNameAsync(User.Identity.Name);
             Guid userId = user.Id;
-            await this.rentServices.BookDistribution(userId, bookId);
+            await this.rentServices.BookRent(userId, bookId);
             return Ok();
         }
 
@@ -51,11 +51,11 @@ namespace Library.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<PaginatedList<RentHistoryViewModel>>> UserRentHistory(int pageIndex, int pageSize)
+        public async Task<ActionResult<PaginatedList<RentHistoryViewModel>>> GetUserRentHistory(int pageIndex, int pageSize)
         {
             var user = await userServices.FindByNameAsync(User.Identity.Name);
             Guid userId = user.Id;
-            var listOfRent =  this.rentServices.PaginatedList(pageIndex, pageSize, userId);
+            var listOfRent =  this.rentServices.GetPaginatedList(pageIndex, pageSize, userId);
             var paginatedViewModelList = new PaginatedList<RentHistoryViewModel>(
                 Mapper.Map<List<RentHistory>, List<RentHistoryViewModel>>(listOfRent.Items),
                 listOfRent.PageIndex,

@@ -25,7 +25,7 @@ public class BookPicturesServices : IBookPicturesServices
         await _unitOfWork.CompleteAsync();
     }
 
-    public async Task<List<BookPictures>> GetPicturesByBook(Guid bookId)
+    public async Task<List<BookPictures>> GetBookPictures(Guid bookId)
     {
         return await _unitOfWork.BookPictures.ToListByPredicateAsync(x => x.BookId == bookId);
     }

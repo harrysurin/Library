@@ -5,12 +5,12 @@ namespace LibraryServices.Interfaces
     public interface IRentHistoryServices
     {
         Task<IEnumerable<RentHistory>> GetAllAsync();
-        Task BookDistribution(Guid userId, Guid bookId);
+        Task BookRent(Guid userId, Guid bookId);
         Task ReturnBook(Guid bookId, Guid userId);
-        Task<bool> AccessToRent(Guid bookId);
-        Task<List<RentHistory>> UserRentHistory(Guid userId);
+        Task<bool> IsAvailableToRent(Guid bookId);
+        Task<List<RentHistory>> GetUserRentHistory(Guid userId);
         Task Delete(RentHistory rentHistory);
         Task<RentHistory?> GetByIdAsync(Guid id);
-        PaginatedList<RentHistory> PaginatedList(int pageIndex, int pageSize, Guid userId);
+        PaginatedList<RentHistory> GetPaginatedList(int pageIndex, int pageSize, Guid userId);
     }
 }

@@ -49,27 +49,27 @@ public class BookService : IBookServices
         return await _unitOfWork.Books.ToListByPredicateAsync(x => x.AuthorId == authorId);
     }
 
-    public PaginatedList<Book> PaginatedListByAuthorId(int pageIndex, int pageSize, Guid authorId)
+    public PaginatedList<Book> GetPaginatedListByAuthorId(int pageIndex, int pageSize, Guid authorId)
     {
         return _unitOfWork.Books
-            .GetAllPaginatedAsync(pageIndex, pageSize, x => x.AuthorId == authorId, x => x.Title);
+            .GetPaginatedListAsync(pageIndex, pageSize, x => x.AuthorId == authorId, x => x.Title);
     }
 
-    public PaginatedList<Book> PaginatedListByGenre(int pageIndex, int pageSize, string genre)
+    public PaginatedList<Book> GetPaginatedListByGenre(int pageIndex, int pageSize, string genre)
     {
         return _unitOfWork.Books
-            .GetAllPaginatedAsync(pageIndex, pageSize, x => x.Genre == genre, x => x.Title);
+            .GetPaginatedListAsync(pageIndex, pageSize, x => x.Genre == genre, x => x.Title);
     }
 
-    public PaginatedList<Book> PaginatedListByName(int pageIndex, int pageSize, string book)
+    public PaginatedList<Book> GetPaginatedListByName(int pageIndex, int pageSize, string book)
     {
         return _unitOfWork.Books
-            .GetAllPaginatedAsync(pageIndex, pageSize, x => x.Title == book, x => x.Title);
+            .GetPaginatedListAsync(pageIndex, pageSize, x => x.Title == book, x => x.Title);
     }
 
-    public PaginatedList<Book> PaginatedList(int pageIndex, int pageSize)
+    public PaginatedList<Book> GetPaginatedList(int pageIndex, int pageSize)
     {
         return _unitOfWork.Books
-            .GetAllPaginatedAsync(pageIndex, pageSize, null , x => x.Title);
+            .GetPaginatedListAsync(pageIndex, pageSize, null , x => x.Title);
     }
 }

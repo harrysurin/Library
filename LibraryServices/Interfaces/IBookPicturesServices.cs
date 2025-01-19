@@ -7,6 +7,6 @@ namespace LibraryServices.Interfaces
         Task<BookPictures?> GetPictureAsync(Guid pictureId);
         Task AddPicture(BookPictures picture, string serverRootPath, string pathToImagesDirectory);
         Task Delete(BookPictures picture, string serverRootPath);
-        Task<List<BookPictures>> GetPicturesByBook(Guid bookId);
+        Task<List<BookPictures>> GetBookPictures(Guid bookId);
     }
 }

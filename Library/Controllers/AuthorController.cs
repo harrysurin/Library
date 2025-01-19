@@ -35,7 +35,7 @@ namespace Library.Controllers
         [HttpGet]
         public ActionResult<PaginatedList<AuthorViewModel>> GetAll(int pageIndex, int pageSize)
         {
-            var listOfAuthor =  this._authorServices.PaginatedList(pageIndex, pageSize);
+            var listOfAuthor =  this._authorServices.GetPaginatedList(pageIndex, pageSize);
             var paginatedViewModelList = new PaginatedList<AuthorViewModel>(
                 Mapper.Map<List<Author>, List<AuthorViewModel>>(listOfAuthor.Items),
                 listOfAuthor.PageIndex,

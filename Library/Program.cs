@@ -107,7 +107,7 @@ using (var scope = app.Services.CreateScope())
         string adminPassword = "adminPassword1!!";
 
         var userServices = services.GetRequiredService<IUserServices>();
-        await RoleInitializer.InitializeAsync(userServices, adminEmail, adminPassword);
+        await UsersInitializer.InitializeAsync(userServices, adminEmail, adminPassword);
     }
     catch (Exception ex)
     {
