@@ -20,9 +20,9 @@ public class LibraryContext : IdentityDbContext<User, Role, Guid>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Book>().HasIndex(u => u.ISBN);
         var dbSeeder = new DbSeeder(modelBuilder);
         dbSeeder.SeedRoles();
-        
     }
 }
 
