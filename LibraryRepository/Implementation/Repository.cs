@@ -23,7 +23,7 @@ public class Repository<T> : IRepository<T> where T : class
     public async Task<List<T>> ToListByPredicateAsync(Expression<Func<T, bool>> predicate) 
         => await _dbSet.Where(predicate).ToListAsync();
 
-    public PaginatedList<T> GetPaginatedListAsync<TKey>(int pageIndex, int pageSize,
+    public PaginatedList<T> GetPaginatedList<TKey>(int pageIndex, int pageSize,
                  Expression<Func<T, bool>>? filterPredicate, Func<T, TKey> orderKeySelector)
     {
         if(pageIndex < 1 || pageSize < 1)

@@ -75,7 +75,7 @@ public class RentHistoryService : IRentHistoryServices
     public PaginatedList<RentHistory> GetPaginatedList(int pageIndex, int pageSize, Guid userId)
     {
         return _unitOfWork.RentHistory
-            .GetPaginatedListAsync(pageIndex, pageSize, x => x.UserId == userId, x => x.DateOfRent);
+            .GetPaginatedList(pageIndex, pageSize, x => x.UserId == userId, x => x.DateOfRent);
     }
 
 }

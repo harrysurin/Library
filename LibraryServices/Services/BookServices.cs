@@ -53,26 +53,26 @@ public class BookService : IBookServices
     public PaginatedList<Book> GetPaginatedListByAuthorId(int pageIndex, int pageSize, Guid authorId)
     {
         return _unitOfWork.Books
-            .GetPaginatedListAsync(pageIndex, pageSize, x => x.AuthorId == authorId, x => x.Title);
+            .GetPaginatedList(pageIndex, pageSize, x => x.AuthorId == authorId, x => x.Title);
     }
 
     public PaginatedList<Book> GetPaginatedListByGenre(int pageIndex, int pageSize, string genre)
     {
         return _unitOfWork.Books
-            .GetPaginatedListAsync(pageIndex, pageSize, 
+            .GetPaginatedList(pageIndex, pageSize, 
             x =>  String.Equals(x.Genre, genre, StringComparison.OrdinalIgnoreCase) , x => x.Title);
     }
 
     public PaginatedList<Book> GetPaginatedListByName(int pageIndex, int pageSize, string book)
     {
         return _unitOfWork.Books
-            .GetPaginatedListAsync(pageIndex, pageSize, x => x.Title.ToUpper().Contains(book.ToUpper()),
+            .GetPaginatedList(pageIndex, pageSize, x => x.Title.ToUpper().Contains(book.ToUpper()),
                 x => x.Title);
     }
 
     public PaginatedList<Book> GetPaginatedList(int pageIndex, int pageSize)
     {
         return _unitOfWork.Books
-            .GetPaginatedListAsync(pageIndex, pageSize, null , x => x.Title);
+            .GetPaginatedList(pageIndex, pageSize, null , x => x.Title);
     }
 }

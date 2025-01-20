@@ -12,6 +12,6 @@ public interface IRepository<T> where T : class
     Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
     Task<List<T>> ToListByPredicateAsync(Expression<Func<T, bool>> predicate);
 
-    PaginatedList<T> GetPaginatedListAsync<TKey>(int pageIndex, int pageSize,
+    PaginatedList<T> GetPaginatedList<TKey>(int pageIndex, int pageSize,
                  Expression<Func<T, bool>>? filterPredicate, Func<T, TKey> orderPredicate);
 }

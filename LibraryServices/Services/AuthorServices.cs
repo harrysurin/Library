@@ -51,7 +51,7 @@ public class AuthorService : IAuthorServices
     public PaginatedList<Author> GetPaginatedList(int pageIndex, int pageSize)
     {
         return _unitOfWork.Authors
-            .GetPaginatedListAsync(pageIndex, pageSize, null , x => x.LastName);
+            .GetPaginatedList(pageIndex, pageSize, null , x => x.LastName);
     }
 
 }
