@@ -5,6 +5,7 @@ using LibraryRepository.Models;
 using Moq;
 using LibraryServices.Validation;
 using System.Linq.Expressions;
+using LibraryRepository.Interfaces;
 
 namespace LibraryServices.Tests;
 
@@ -31,8 +32,8 @@ public class ServicesUnitTests
         
 
         mockRepository
-            .Setup(repo => repo.FirstOrDefaultAsync(It.IsAny<Expression<Func<Author, bool>>>()))
-            .ReturnsAsync(expectedAuthor);
+            .Setup(repo => repo.ToListByPredicateAsync(It.IsAny<Expression<Func<Author, bool>>>()))
+            .ReturnsAsync(new List<Author>() { expectedAuthor });
 
         mockUnitOfWork
             .Setup(x => x.Authors)
@@ -40,7 +41,7 @@ public class ServicesUnitTests
 
         var services = new AuthorService(mockUnitOfWork.Object, authorValidator);
 
-        var result = await services.GetAuthorByName(FirstName);
+        var result = (await services.GetAuthorByName(FirstName)).FirstOrDefault();
 
         Assert.Same(expectedAuthor, result);
     }

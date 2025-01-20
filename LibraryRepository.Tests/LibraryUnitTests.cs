@@ -6,6 +6,7 @@ using Moq;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
+using LibraryRepository.Implementations;
 
 namespace LibraryRepository.Tests;
 
