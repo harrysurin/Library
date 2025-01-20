@@ -2,6 +2,7 @@ using LibraryRepository.Models;
 using LibraryServices.Interfaces;
 using LibraryServices.Validation;
 using FluentValidation;
+using LibraryRepository.Interfaces;
 
 
 public class BookService : IBookServices
@@ -58,13 +59,15 @@ public class BookService : IBookServices
     public PaginatedList<Book> GetPaginatedListByGenre(int pageIndex, int pageSize, string genre)
     {
         return _unitOfWork.Books
-            .GetPaginatedListAsync(pageIndex, pageSize, x => x.Genre == genre, x => x.Title);
+            .GetPaginatedListAsync(pageIndex, pageSize, 
+            x =>  String.Equals(x.Genre, genre, StringComparison.OrdinalIgnoreCase) , x => x.Title);
     }
 
     public PaginatedList<Book> GetPaginatedListByName(int pageIndex, int pageSize, string book)
     {
         return _unitOfWork.Books
-            .GetPaginatedListAsync(pageIndex, pageSize, x => x.Title == book, x => x.Title);
+            .GetPaginatedListAsync(pageIndex, pageSize, x => x.Title.ToUpper().Contains(book.ToUpper()),
+                x => x.Title);
     }
 
     public PaginatedList<Book> GetPaginatedList(int pageIndex, int pageSize)

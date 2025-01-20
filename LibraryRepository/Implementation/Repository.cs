@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using LibraryRepository.Interfaces;
 
+
+namespace LibraryRepository.Implementations;
 public class Repository<T> : IRepository<T> where T : class
 {
     private readonly LibraryContext _context;
@@ -21,8 +24,13 @@ public class Repository<T> : IRepository<T> where T : class
         => await _dbSet.Where(predicate).ToListAsync();
 
     public PaginatedList<T> GetPaginatedListAsync<TKey>(int pageIndex, int pageSize,
-                 Expression<Func<T, bool>>? filterPredicate, Func<T, TKey> orderPredicate)
+                 Expression<Func<T, bool>>? filterPredicate, Func<T, TKey> orderKeySelector)
     {
+        if(pageIndex < 1 || pageSize < 1)
+        {
+            throw new ArgumentException("Page index/size must be > 0");
+        }
+
         var items = _dbSet
             .AsQueryable();
         if (filterPredicate != null)
@@ -30,7 +38,7 @@ public class Repository<T> : IRepository<T> where T : class
             items = items.Where(filterPredicate);
         }
         var itemsAsList = items
-            .OrderBy(orderPredicate)
+            .OrderBy(orderKeySelector)
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
             .ToList();

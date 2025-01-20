@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using LibraryServices.Interfaces;
 using LibraryRepository.Models;
+using LibraryRepository.Interfaces;
 
 
 public class EmailServices : IEmailServices

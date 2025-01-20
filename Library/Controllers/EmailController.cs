@@ -14,12 +14,10 @@ namespace Library.Controllers
 
     public class EmailController : ControllerBase
     {
-        private readonly ILogger<AuthorController> logger;
         private readonly IEmailServices emailServices;
 
-        public EmailController(ILogger<AuthorController> _logger,IEmailServices _emailServices)
+        public EmailController(IEmailServices _emailServices)
         {
-            logger = _logger;
             emailServices = _emailServices;
         }
 

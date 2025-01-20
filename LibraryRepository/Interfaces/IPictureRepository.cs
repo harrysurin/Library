@@ -1,6 +1,7 @@
-
 using System.Linq.Expressions;
 
+
+namespace LibraryRepository.Interfaces;
 public interface IPictureRepository<BookPictures> 
 {
     Task AddAsync(BookPictures picture, string serverRootPath,  string pathToImagesDirectory);

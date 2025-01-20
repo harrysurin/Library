@@ -1,9 +1,10 @@
+using LibraryRepository.Interfaces;
 using LibraryRepository.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
+
+namespace LibraryRepository.Implementations;
 public class PictureRepository : IPictureRepository<BookPictures>
 {
     private readonly LibraryContext _context;

@@ -12,12 +12,10 @@ namespace Library.Controllers
 
     public class AuthorController : ControllerBase
     {
-        private readonly ILogger<AuthorController> _logger;
         private readonly IAuthorServices _authorServices;
 
-        public AuthorController(ILogger<AuthorController> logger, IAuthorServices authorServices)
+        public AuthorController(IAuthorServices authorServices)
         {
-            _logger = logger;
             _authorServices = authorServices;
         }
 
@@ -70,22 +68,22 @@ namespace Library.Controllers
             if(objAuthor != null) 
             {
                 var author = Mapper.Map<Author, AuthorViewModel>(objAuthor);
-                return author;
+                return  Ok(author);
             }
-            return Ok();
+            return NotFound();
         }
 
         [AllowAnonymous]
         [HttpGet("FindByName")]
-        public async Task<ActionResult<AuthorViewModel>> GetByName(string name)
+        public async Task<ActionResult<List<AuthorViewModel>>> GetByName(string name)
         {
-            var objAuthor = await this._authorServices.GetAuthorByName(name);
-            if(objAuthor != null) 
+            var authors = (await this._authorServices.GetAuthorByName(name)).ToList();
+            if(authors != null) 
             {
-                var author = Mapper.Map<Author, AuthorViewModel>(objAuthor);
-                return author;
+                var authorViewModels = Mapper.Map<List<Author>, List<AuthorViewModel>>(authors);
+                return Ok(authorViewModels);
             }
-            return Ok();
+            return NotFound();
         
         }
 

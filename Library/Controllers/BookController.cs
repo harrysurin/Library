@@ -12,21 +12,13 @@ namespace Library.Controllers
 
     public class BookController : ControllerBase
     {
-        private readonly ILogger<AuthorController> _logger;
-
         private readonly IRentHistoryServices rentHistory;
         private readonly IBookServices bookServices;
-        private readonly IAuthorServices authorServices;
 
-
-
-        public BookController(ILogger<AuthorController> logger, 
-                IBookServices _bookServices, IRentHistoryServices _rentHistory, IAuthorServices _authorServices)
+        public BookController(IBookServices _bookServices, IRentHistoryServices _rentHistory)
         {
-            _logger = logger;
             bookServices = _bookServices;
             rentHistory = _rentHistory;
-            authorServices = _authorServices;
         }
 
         [Authorize(Roles = "Admin")]
@@ -66,7 +58,7 @@ namespace Library.Controllers
                 listOfBook.PageIndex,
                 listOfBook.TotalPages);
             
-            return Ok();
+            return Ok(paginatedViewModelList);
         }
 
         [AllowAnonymous]
@@ -77,9 +69,9 @@ namespace Library.Controllers
             if(objBook != null)
             {
                 var book = Mapper.Map<Book, BookViewModel>(objBook);
-                return book;
+                return Ok(book);
             }
-            return Ok(); 
+            return NotFound(); 
         }
 
         [AllowAnonymous]
@@ -90,17 +82,16 @@ namespace Library.Controllers
             if(objBook != null)
             {
                 var book = Mapper.Map<Book, BookViewModel>(objBook);
-                return book;
+                return Ok(book);
             }
             return Ok(); 
         }
 
         [AllowAnonymous]
         [HttpGet("GetByAuthor")]
-        public async Task<ActionResult<PaginatedList<BookViewModel>>> GetByAuthor(int pageIndex, int pageSize, string name)
+        public ActionResult<PaginatedList<BookViewModel>> GetByAuthor(int pageIndex, int pageSize, Guid authorId)
         {
-            Author? author = await this.authorServices.GetAuthorByName(name);
-            var listOfBook =  this.bookServices.GetPaginatedListByAuthorId(pageIndex, pageSize, author.AuthorId);
+            var listOfBook =  this.bookServices.GetPaginatedListByAuthorId(pageIndex, pageSize, authorId);
             var paginatedViewModelList = new PaginatedList<BookViewModel>(
                 Mapper.Map<List<Book>, List<BookViewModel>>(listOfBook.Items),
                 listOfBook.PageIndex,
@@ -136,8 +127,8 @@ namespace Library.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("AccessToRent")]
-        public async Task<ActionResult<Boolean>> AccessToRent(Guid bookId)
+        [HttpGet("IsAvailableToRent")]
+        public async Task<ActionResult<bool>> IsAvailableToRent(Guid bookId)
         {
             return Ok(await this.rentHistory.IsAvailableToRent(bookId));
         }

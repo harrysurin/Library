@@ -1,9 +1,8 @@
-using System.IO.Compression;
-using System.Runtime.CompilerServices;
 using LibraryRepository.Models;
 using LibraryServices.Interfaces;
 using LibraryServices.Validation;
 using FluentValidation;
+using LibraryRepository.Interfaces;
 
 
 public class RentHistoryService : IRentHistoryServices
@@ -42,7 +41,7 @@ public class RentHistoryService : IRentHistoryServices
 
         if(rentHistory == null)
         {
-            throw new ArgumentException("You don't have access");
+            throw new ArgumentException("No rent records was found");
         }
         else 
         {
@@ -57,9 +56,7 @@ public class RentHistoryService : IRentHistoryServices
         var rentHistory = await _unitOfWork.RentHistory
             .FirstOrDefaultAsync(x => x.BookId == bookId && x.DateOfReturn == null);
 
-        if(rentHistory == null) return false;
-        else
-        return true;
+        return rentHistory != null;
     }
 
     public async Task<List<RentHistory>> GetUserRentHistory(Guid userId)

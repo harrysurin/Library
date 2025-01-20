@@ -4,7 +4,7 @@ namespace LibraryServices.Interfaces
 {
     public interface IAuthorServices : IServices<Author>
     {
-        Task<Author?> GetAuthorByName(string AuthorName);
+        Task<IEnumerable<Author>> GetAuthorByName(string AuthorName);
         PaginatedList<Author> GetPaginatedList(int pageIndex, int pageSize);
     }
 }

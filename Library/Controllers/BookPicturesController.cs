@@ -14,19 +14,13 @@ namespace Library.Controllers
 
     public class BookPicturesController : ControllerBase
     {
-        private readonly ILogger<AuthorController> _logger;
-        private readonly IBookServices bookServices;
         private readonly IBookPicturesServices pictureServices;
 
         private readonly IWebHostEnvironment webHostEnv;
 
-        public BookPicturesController(ILogger<AuthorController> logger,
-            IBookServices _bookServices,
-            IBookPicturesServices _pictureServices,
+        public BookPicturesController(IBookPicturesServices _pictureServices,
             IWebHostEnvironment _webHostEnv)
         {
-            _logger = logger;
-            bookServices = _bookServices;
             pictureServices = _pictureServices;
             webHostEnv = _webHostEnv;
         }
@@ -52,7 +46,7 @@ namespace Library.Controllers
             {
                 return PhysicalFile(Path.Combine(serverRootPath, picture.Path), "image/jpeg");
             }
-            return Ok(); 
+            return NotFound(); 
         }
 
         [Authorize(Roles = "Admin")]
@@ -67,7 +61,7 @@ namespace Library.Controllers
                 return Ok();
             }
 
-            return Ok();
+            return NotFound();
         }
 
     }

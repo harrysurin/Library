@@ -10,8 +10,8 @@ public class BookPictures
 
     public Guid BookId { get; set; }
 
-    public string Path { get; set; }
+    public required string Path { get; set; }
 
     [NotMapped]
-    public IFormFile Picture { get; set; }
+    public IFormFile? Picture { get; set; }
 }

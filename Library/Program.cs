@@ -5,6 +5,8 @@ using Microsoft.OpenApi.Models;
 using AutoMapper;
 using Library.ViewModels;
 using LibraryServices.Validation;
+using LibraryRepository.Interfaces;
+using LibraryRepository.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 

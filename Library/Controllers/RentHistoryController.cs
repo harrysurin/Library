@@ -13,19 +13,25 @@ namespace Library.Controllers
 
     public class RentHistoryController : ControllerBase
     {
-        private readonly ILogger<AuthorController> _logger;
-
         private readonly IRentHistoryServices rentServices;
 
         private readonly IUserServices userServices;
 
 
-        public RentHistoryController(ILogger<AuthorController> logger, 
-                IRentHistoryServices _rentServices, IUserServices _userServices)
+        public RentHistoryController(IRentHistoryServices _rentServices, IUserServices _userServices)
         {
-            _logger = logger;
             userServices = _userServices;
             rentServices = _rentServices;
+        }
+
+        private ActionResult<PaginatedList<RentHistoryViewModel>> GetRentHistory(int pageIndex, int pageSize, Guid userId)
+        {
+            var listOfRent =  this.rentServices.GetPaginatedList(pageIndex, pageSize, userId);
+            var paginatedViewModelList = new PaginatedList<RentHistoryViewModel>(
+                Mapper.Map<List<RentHistory>, List<RentHistoryViewModel>>(listOfRent.Items),
+                listOfRent.PageIndex,
+                listOfRent.TotalPages);
+            return paginatedViewModelList;
         }
 
         [Authorize]
@@ -55,11 +61,15 @@ namespace Library.Controllers
         {
             var user = await userServices.FindByNameAsync(User.Identity.Name);
             Guid userId = user.Id;
-            var listOfRent =  this.rentServices.GetPaginatedList(pageIndex, pageSize, userId);
-            var paginatedViewModelList = new PaginatedList<RentHistoryViewModel>(
-                Mapper.Map<List<RentHistory>, List<RentHistoryViewModel>>(listOfRent.Items),
-                listOfRent.PageIndex,
-                listOfRent.TotalPages);
+            var paginatedViewModelList = this.GetRentHistory(pageIndex, pageSize, userId);
+            return Ok(paginatedViewModelList);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("GetUserRentHistoryByAdmin")]
+        public async Task<ActionResult<PaginatedList<RentHistoryViewModel>>> GetUserRentHistoryByAdmin(int pageIndex, int pageSize, Guid userId)
+        {
+            var paginatedViewModelList = this.GetRentHistory(pageIndex, pageSize, userId);
             return Ok(paginatedViewModelList);
         }
     }

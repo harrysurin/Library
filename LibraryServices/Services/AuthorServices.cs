@@ -1,4 +1,5 @@
 using FluentValidation;
+using LibraryRepository.Interfaces;
 using LibraryRepository.Models;
 using LibraryServices.Interfaces;
 using LibraryServices.Validation;
@@ -38,11 +39,13 @@ public class AuthorService : IAuthorServices
         await _unitOfWork.CompleteAsync();
     }
 
-    public async Task<Author?> GetAuthorByName(string AuthorName)
+    public async Task<IEnumerable<Author>> GetAuthorByName(string authorName)
     {
-        return await _unitOfWork.Authors.FirstOrDefaultAsync(x 
-            => x.FirstName == AuthorName || x.LastName == AuthorName
-                || (x.FirstName + " " + x.LastName).Contains(AuthorName));
+        authorName = authorName.Trim();
+        return await _unitOfWork.Authors.ToListByPredicateAsync(x 
+            => String.Equals(x.FirstName, authorName, StringComparison.OrdinalIgnoreCase) 
+                || String.Equals(x.LastName, authorName, StringComparison.OrdinalIgnoreCase)
+                || String.Equals(x.FirstName + " " + x.LastName, authorName, StringComparison.OrdinalIgnoreCase));
     }
 
     public PaginatedList<Author> GetPaginatedList(int pageIndex, int pageSize)

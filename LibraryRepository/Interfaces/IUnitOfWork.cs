@@ -1,5 +1,7 @@
 using LibraryRepository.Models;
 
+
+namespace LibraryRepository.Interfaces;
 public interface IUnitOfWork : IDisposable
 {
     IRepository<Author> Authors { get; }

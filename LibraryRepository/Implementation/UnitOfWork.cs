@@ -1,5 +1,7 @@
+using LibraryRepository.Interfaces;
 using LibraryRepository.Models;
 
+namespace LibraryRepository.Implementations;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly LibraryContext _context;
