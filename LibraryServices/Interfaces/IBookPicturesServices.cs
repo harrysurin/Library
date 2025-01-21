@@ -4,7 +4,7 @@ namespace LibraryServices.Interfaces
 {
     public interface IBookPicturesServices
     {
-        Task<BookPictures?> GetPictureAsync(Guid pictureId);
+        Task<BookPictures?> GetPictureAsync(Guid pictureId, string serverRootPath);
         Task AddPicture(BookPictures picture, string serverRootPath, string pathToImagesDirectory);
         Task Delete(BookPictures picture, string serverRootPath);
         Task<List<BookPictures>> GetBookPictures(Guid bookId);

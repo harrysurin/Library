@@ -17,22 +17,31 @@ public class PictureRepository : IPictureRepository<BookPictures>
 
     public async Task AddAsync(BookPictures picture, string serverRootPath, string pathToImagesDirectory)
     {
-        picture.Path = Path.Combine(pathToImagesDirectory, picture.Id + ".jpg");
+        if (picture.PictureBytes == null)
+        {
+            throw new ArgumentNullException("Picture is null");
+        }
+
+        picture.Path = Path.Combine(pathToImagesDirectory, picture.Id + "." + picture.FileExtension);
         await _dbSet.AddAsync(picture);
         await _context.SaveChangesAsync();
 
-        var path = Path.Combine(serverRootPath, picture.Path);
-
-        using (FileStream stream = new FileStream(path, FileMode.Create))
-        {
-            await picture.Picture.CopyToAsync(stream);
-            stream.Close();
-        }
+        var fullPath = Path.Combine(serverRootPath, picture.Path);
+        File.WriteAllBytes(fullPath, picture.PictureBytes);
     }
 
-    public async Task<BookPictures> GetAsync(Guid pictureId)
+    public async Task<BookPictures> GetAsync(Guid pictureId, string serverRootPath)
     {
         var picture = await _dbSet.FirstOrDefaultAsync(x => x.Id == pictureId);
+        
+        if (picture == null)
+        {
+            throw new ArgumentException("Picture not found");
+        }
+
+        var fullPath = Path.Combine(serverRootPath, picture.Path);
+        picture.PictureBytes = File.ReadAllBytes(fullPath);
+
         return picture;
     }
 

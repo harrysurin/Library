@@ -25,6 +25,7 @@ namespace Library.Controllers
             webHostEnv = _webHostEnv;
         }
 
+
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddPicture(BookPictureViewModel pictureView)
@@ -32,6 +33,15 @@ namespace Library.Controllers
             var serverRootPath = webHostEnv.ContentRootPath;
             pictureView.Id = Guid.NewGuid();
             var picture = Mapper.Map<BookPictureViewModel, BookPictures>(pictureView);
+            if (pictureView.Picture.Length > 0)
+            {
+                using (var stream = new MemoryStream())
+                {
+                    pictureView.Picture.CopyTo(stream);
+                    picture.PictureBytes = stream.ToArray();
+                }
+            }
+
             await this.pictureServices.AddPicture(picture, serverRootPath, Constants.ImagesDirectory);
             return Ok();
         }
@@ -41,10 +51,10 @@ namespace Library.Controllers
         public async Task<ActionResult> GetPicture(Guid pictureId)
         {
             var serverRootPath = webHostEnv.ContentRootPath;
-            var picture = await this.pictureServices.GetPictureAsync(pictureId);
-            if(picture != null)
+            var picture = await this.pictureServices.GetPictureAsync(pictureId, serverRootPath);
+            if(picture != null && picture.PictureBytes != null)
             {
-                return PhysicalFile(Path.Combine(serverRootPath, picture.Path), "image/jpeg");
+                return File(picture.PictureBytes, "image/" + picture.FileExtension);
             }
             return NotFound(); 
         }
@@ -67,13 +77,12 @@ namespace Library.Controllers
         public async Task<IActionResult> DeletePicture(Guid pictureId)
         {
             var serverRootPath = webHostEnv.ContentRootPath;
-            var picture = await this.pictureServices.GetPictureAsync(pictureId);
+            var picture = await this.pictureServices.GetPictureAsync(pictureId, serverRootPath);
             if(picture != null)
             {
                 await this.pictureServices.Delete(picture, serverRootPath);
                 return Ok();
             }
-
             return NotFound();
         }
 
