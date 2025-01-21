@@ -13,5 +13,8 @@ public class BookPictures
     public required string Path { get; set; }
 
     [NotMapped]
-    public IFormFile? Picture { get; set; }
+    public byte[]? PictureBytes { get; set; }
+
+    [NotMapped]
+    public string? FileExtension { get; set; }
 }
