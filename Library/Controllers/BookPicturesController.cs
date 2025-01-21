@@ -61,13 +61,14 @@ namespace Library.Controllers
 
         [AllowAnonymous]
         [HttpGet("GetBookPictures")]
-        public async Task<ActionResult<List<BookPictures>>> GetBookPictures(Guid bookId)
+        public async Task<ActionResult<List<BookPictureViewModel>>> GetBookPictures(Guid bookId)
         {
             var serverRootPath = webHostEnv.ContentRootPath;
             var pictures = await this.pictureServices.GetBookPictures(bookId);
             if(pictures != null)
             {
-                return Ok(pictures);
+                var picturesViewModels = Mapper.Map<List<BookPictures>, List<BookPictureViewModel>>(pictures);
+                return Ok(picturesViewModels);
             }
             return NotFound(); 
         }
