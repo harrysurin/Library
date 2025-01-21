@@ -27,7 +27,7 @@ public class EmailServices : IEmailServices
         bookServices = _bookServices;
         unitOfWork = _unitOfWork;
         _configuration = configuration;
-        _emailFrom = _configuration["Email:Address"];
+        _emailFrom = _configuration["Email:Login"];
         _password = _configuration["Email:Password"];
     }
 
@@ -46,7 +46,9 @@ public class EmailServices : IEmailServices
             
             using (var client = new SmtpClient())
             {
-                await client.ConnectAsync("smtp.gmail.com", 587);
+                await client.ConnectAsync(
+                    _configuration["Email:SmtpServerAdress"],
+                    int.Parse(_configuration["Email:SmtpServerPort"]));
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
 
                 await client.AuthenticateAsync(_emailFrom, _password);
