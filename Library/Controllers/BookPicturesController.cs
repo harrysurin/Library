@@ -49,6 +49,19 @@ namespace Library.Controllers
             return NotFound(); 
         }
 
+        [AllowAnonymous]
+        [HttpGet("GetBookPictures")]
+        public async Task<ActionResult<List<BookPictures>>> GetBookPictures(Guid bookId)
+        {
+            var serverRootPath = webHostEnv.ContentRootPath;
+            var pictures = await this.pictureServices.GetBookPictures(bookId);
+            if(pictures != null)
+            {
+                return Ok(pictures);
+            }
+            return NotFound(); 
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpDelete]
         public async Task<IActionResult> DeletePicture(Guid pictureId)
