@@ -19,7 +19,10 @@ public class BookPicturesServices : IBookPicturesServices
         using var codec = SKCodec.Create(skImage.EncodedData);
         var format = codec.EncodedFormat.ToString().ToLower();
         picture.FileExtension = format;
-
+        if(picture == null && picture.PictureBytes == null)
+        {
+            throw new ArgumentNullException();
+        }
         return picture;
     }
     
@@ -41,6 +44,10 @@ public class BookPicturesServices : IBookPicturesServices
 
     public async Task Delete(BookPictures picture, string serverRootPath)
     {
+        if(picture != null)
+        {
+            throw new ArgumentNullException();
+        }
         _unitOfWork.BookPictures.Delete(picture, serverRootPath);
         await _unitOfWork.CompleteAsync();
     }

@@ -35,7 +35,7 @@ namespace Library.Controllers
         public async Task<IActionResult> Delete(Guid bookId)
         {
             var book = await this.bookServices.GetByIdAsync(bookId);
-            if(book != null) await this.bookServices.Delete(book);
+            await this.bookServices.Delete(book);
             return Ok();
         }
 
@@ -66,12 +66,9 @@ namespace Library.Controllers
         public async Task<ActionResult<BookViewModel>> GetByISBN(string ISBN)
         {
             var objBook = await this.bookServices.GetBookByISBN(ISBN);
-            if(objBook != null)
-            {
-                var book = Mapper.Map<Book, BookViewModel>(objBook);
-                return Ok(book);
-            }
-            return NotFound(); 
+            var book = Mapper.Map<Book, BookViewModel>(objBook);
+            return Ok(book);
+           
         }
 
         [AllowAnonymous]
@@ -79,12 +76,8 @@ namespace Library.Controllers
         public async Task<ActionResult<BookViewModel>> GetById(Guid bookId)
         {
             var objBook = await this.bookServices.GetByIdAsync(bookId);
-            if(objBook != null)
-            {
-                var book = Mapper.Map<Book, BookViewModel>(objBook);
-                return Ok(book);
-            }
-            return Ok(); 
+            var book = Mapper.Map<Book, BookViewModel>(objBook);
+            return Ok(book);
         }
 
         [AllowAnonymous]

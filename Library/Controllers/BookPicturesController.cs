@@ -52,11 +52,7 @@ namespace Library.Controllers
         {
             var serverRootPath = webHostEnv.ContentRootPath;
             var picture = await this.pictureServices.GetPictureAsync(pictureId, serverRootPath);
-            if(picture != null && picture.PictureBytes != null)
-            {
-                return File(picture.PictureBytes, "image/" + picture.FileExtension);
-            }
-            return NotFound(); 
+            return File(picture.PictureBytes, "image/" + picture.FileExtension);
         }
 
         [AllowAnonymous]
@@ -79,12 +75,8 @@ namespace Library.Controllers
         {
             var serverRootPath = webHostEnv.ContentRootPath;
             var picture = await this.pictureServices.GetPictureAsync(pictureId, serverRootPath);
-            if(picture != null)
-            {
-                await this.pictureServices.Delete(picture, serverRootPath);
-                return Ok();
-            }
-            return NotFound();
+            await this.pictureServices.Delete(picture, serverRootPath);
+            return Ok();
         }
 
     }

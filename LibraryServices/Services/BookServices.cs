@@ -25,7 +25,18 @@ public class BookService : IBookServices
         await _unitOfWork.CompleteAsync();
     }
 
-    public async Task<Book?> GetByIdAsync(Guid id) => await _unitOfWork.Books.GetByIdAsync(id);
+    public async Task<Book?> GetByIdAsync(Guid id)
+    {
+       var book = await _unitOfWork.Books.GetByIdAsync(id);
+        if(book == null)
+        {
+            throw new ArgumentNullException();
+        }
+        else
+        {
+            return book;
+        }
+    }
 
     public async Task Update(Book book)
     {
@@ -36,13 +47,26 @@ public class BookService : IBookServices
 
     public async Task Delete(Book book)
     {
-        _unitOfWork.Books.Delete(book);
-        await _unitOfWork.CompleteAsync();
+        if(book == null)
+        {
+            throw new ArgumentNullException();
+        }
+        else
+        {
+            _unitOfWork.Books.Delete(book);
+            await _unitOfWork.CompleteAsync();
+        }
     }
 
     public async Task<Book?> GetBookByISBN(string ISBN)
     {
-        return await _unitOfWork.Books.FirstOrDefaultAsync(x => x.ISBN == ISBN);
+        var book = await _unitOfWork.Books.FirstOrDefaultAsync(x => x.ISBN == ISBN);
+        if(book == null)
+        {
+            throw new ArgumentNullException();
+        }
+        else
+        return book;
     }
 
     public async Task<List<Book>> GetBooksByAuthor(Guid authorId)

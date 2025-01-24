@@ -18,7 +18,18 @@ public class AuthorService : IAuthorServices
     public async Task<IEnumerable<Author>> GetAllAsync()
         => await _unitOfWork.Authors.GetAllAsync();
     
-    public async Task<Author?> GetByIdAsync(Guid id) => await _unitOfWork.Authors.GetByIdAsync(id);
+    public async Task<Author?> GetByIdAsync(Guid id)
+    {
+        var author = await _unitOfWork.Authors.GetByIdAsync(id);
+        if(author == null)
+        {
+            throw new ArgumentNullException();
+        }
+        else
+        {
+            return author;
+        }
+    }    
     public async Task AddAsync(Author author)
     {   
         _validator.ValidateAndThrow(author);
@@ -35,8 +46,15 @@ public class AuthorService : IAuthorServices
 
     public async Task Delete(Author author)
     {
-        _unitOfWork.Authors.Delete(author);
-        await _unitOfWork.CompleteAsync();
+        if(author == null)
+        {
+            throw new ArgumentNullException();
+        }
+        else
+        {
+            _unitOfWork.Authors.Delete(author);
+            await _unitOfWork.CompleteAsync();
+        }
     }
 
     public async Task<IEnumerable<Author>> GetAuthorByName(string authorName)

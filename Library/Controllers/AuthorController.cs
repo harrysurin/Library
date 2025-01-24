@@ -47,7 +47,7 @@ namespace Library.Controllers
         public async Task<IActionResult> Delete(Guid authorId)
         {
             var author = await this._authorServices.GetByIdAsync(authorId);
-            if(author != null) await this._authorServices.Delete(author);
+            await this._authorServices.Delete(author);
             return Ok();
         }
 
@@ -65,12 +65,8 @@ namespace Library.Controllers
         public async Task<ActionResult<AuthorViewModel>> GetById(Guid authorId)
         {
             var objAuthor = await this._authorServices.GetByIdAsync(authorId);
-            if(objAuthor != null) 
-            {
-                var author = Mapper.Map<Author, AuthorViewModel>(objAuthor);
-                return  Ok(author);
-            }
-            return NotFound();
+            var author = Mapper.Map<Author, AuthorViewModel>(objAuthor);
+            return  Ok(author);
         }
 
         [AllowAnonymous]
@@ -78,12 +74,9 @@ namespace Library.Controllers
         public async Task<ActionResult<List<AuthorViewModel>>> GetByName(string name)
         {
             var authors = (await this._authorServices.GetAuthorByName(name)).ToList();
-            if(authors != null) 
-            {
-                var authorViewModels = Mapper.Map<List<Author>, List<AuthorViewModel>>(authors);
-                return Ok(authorViewModels);
-            }
-            return NotFound();
+
+            var authorViewModels = Mapper.Map<List<Author>, List<AuthorViewModel>>(authors);
+            return Ok(authorViewModels);
         
         }
 
