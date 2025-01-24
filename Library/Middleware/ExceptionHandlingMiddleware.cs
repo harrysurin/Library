@@ -32,6 +32,7 @@ public class ExceptionHandlingMiddleware
         ExceptionResponse response = exception switch
         {
             ApplicationException _ => new ExceptionResponse(HttpStatusCode.BadRequest, "Application exception occurred."),
+            ArgumentNullException => new ExceptionResponse(HttpStatusCode.BadRequest, "ArgumentNullException: " + exception.Message),
             ArgumentException _ => new ExceptionResponse(HttpStatusCode.BadRequest, "Wrong arguments"),
             KeyNotFoundException _ => new ExceptionResponse(HttpStatusCode.NotFound, "The request key not found."),
             UnauthorizedAccessException _ => new ExceptionResponse(HttpStatusCode.Unauthorized, "Unauthorized."),
