@@ -21,6 +21,15 @@ public class LibraryContext : IdentityDbContext<User, Role, Guid>
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Book>().HasIndex(u => u.ISBN);
+        modelBuilder.Entity<Book>().Property(x => x.ISBN).IsRequired();
+        modelBuilder.Entity<Author>().HasKey(x => x.AuthorId);
+        modelBuilder.Entity<Author>().Property(x => x.FirstName).IsRequired();
+        modelBuilder.Entity<Book>().HasKey(x => x.BookId);
+        modelBuilder.Entity<Book>().Property(x => x.Title).IsRequired();
+        modelBuilder.Entity<RentHistory>().HasKey(x => x.Id);
+        modelBuilder.Entity<BookPictures>().HasKey(x => x.Id);
+        modelBuilder.Entity<BookPictures>().Ignore(x => x.PictureBytes);
+        modelBuilder.Entity<BookPictures>().Ignore(x => x.FileExtension);
         var dbSeeder = new DbSeeder(modelBuilder);
         dbSeeder.SeedRoles();
     }

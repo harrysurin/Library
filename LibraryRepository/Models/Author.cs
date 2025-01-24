@@ -1,10 +1,7 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace LibraryRepository.Models;
 
 public class Author 
 {
-    [Key]
     public Guid AuthorId {get; set;} = Guid.NewGuid();
 
     public required string FirstName {get; set;}

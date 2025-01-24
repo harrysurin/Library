@@ -1,20 +1,17 @@
-using System.ComponentModel.DataAnnotations;
+
 
 namespace LibraryRepository.Models;
 
 public class Book
 {
-    [Key]
     public Guid BookId{get; set;} = Guid.NewGuid();
 
-    [Required]
     public required string ISBN {get; set;}
 
     public Guid? AuthorId {get; set;}
 
     public Author? Author {get; set;}
-
-    [Required]
+    
     public required string Title {get; set;}
     public string? Genre{get; set;}
     public string? Description{get; set;}
