@@ -6,7 +6,7 @@ public class BookPictures
 
     public Guid BookId { get; set; }
 
-    public required string Path { get; set; }
+    public string Path { get; set; }
 
     public byte[]? PictureBytes { get; set; }
 
