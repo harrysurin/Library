@@ -2,8 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using LibraryRepository.Models;
 using LibraryServices.Interfaces;
 using Microsoft.OpenApi.Models;
-using AutoMapper;
-using Library.ViewModels;
 using LibraryServices.Validation;
 using LibraryRepository.Interfaces;
 using LibraryRepository.Implementations;
@@ -32,22 +30,11 @@ builder.Services.AddTransient<AuthorValidator>();
 builder.Services.AddTransient<BookValidator>();
 builder.Services.AddTransient<RentHistoryValidator>();
 
-Mapper.Initialize(
-        cfg =>
-        {
-            cfg.CreateMap<Author, AuthorViewModel>();
-            cfg.CreateMap<AuthorViewModel, Author>();
 
-            cfg.CreateMap<Book, BookViewModel>();
-            cfg.CreateMap<BookViewModel, Book>();
-
-            cfg.CreateMap<BookPictureViewModel, BookPictures>();
-            cfg.CreateMap<BookPictures, BookPictureViewModel>();
-            
-
-        });
-
-
+builder.Services.AddAutoMapper(typeof(AuthorProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(BookProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(RentHistoryProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(BookPictureProfile).Assembly);
 builder.Services.AddControllers();
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
