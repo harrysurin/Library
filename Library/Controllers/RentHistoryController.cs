@@ -17,18 +17,21 @@ namespace Library.Controllers
 
         private readonly IUserServices userServices;
 
+        private readonly IMapper mapper;
 
-        public RentHistoryController(IRentHistoryServices _rentServices, IUserServices _userServices)
+
+        public RentHistoryController(IRentHistoryServices _rentServices, IUserServices _userServices, IMapper _mapper)
         {
             userServices = _userServices;
             rentServices = _rentServices;
+            mapper = _mapper;
         }
 
         private ActionResult<PaginatedList<RentHistoryViewModel>> GetRentHistory(int pageIndex, int pageSize, Guid userId)
         {
             var listOfRent =  this.rentServices.GetPaginatedList(pageIndex, pageSize, userId);
             var paginatedViewModelList = new PaginatedList<RentHistoryViewModel>(
-                Mapper.Map<List<RentHistory>, List<RentHistoryViewModel>>(listOfRent.Items),
+                mapper.Map<List<RentHistoryViewModel>>(listOfRent.Items),
                 listOfRent.PageIndex,
                 listOfRent.TotalPages);
             return paginatedViewModelList;
@@ -36,22 +39,22 @@ namespace Library.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> NewRentHistory(Guid bookId)
+        public async Task<IActionResult> NewRentHistory(Guid bookId, CancellationToken token)
         {
             User? user = await userServices.FindByNameAsync(User.Identity.Name);
             Guid userId = user.Id;
-            await this.rentServices.BookRent(userId, bookId);
+            await this.rentServices.BookRent(userId, bookId, token);
             return Ok();
         }
 
         [Authorize]
         [HttpPost("ReturnBook")]
-        public async Task<IActionResult> ReturnBook(Guid rentId)
+        public async Task<IActionResult> ReturnBook(Guid rentId, CancellationToken token)
         {
             User? user = await userServices.FindByNameAsync(User.Identity.Name);
             Guid userId = user.Id;
             var rentHistory = await this.rentServices.GetByIdAsync(rentId);
-            await this.rentServices.ReturnBook(rentHistory.BookId, userId);
+            await this.rentServices.ReturnBook(rentHistory.BookId, userId, token);
             return Ok();
         }
 

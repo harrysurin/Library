@@ -17,22 +17,24 @@ namespace Library.Controllers
         private readonly IBookPicturesServices pictureServices;
 
         private readonly IWebHostEnvironment webHostEnv;
+        private readonly IMapper mapper;
 
         public BookPicturesController(IBookPicturesServices _pictureServices,
-            IWebHostEnvironment _webHostEnv)
+            IWebHostEnvironment _webHostEnv, IMapper _mapper)
         {
             pictureServices = _pictureServices;
             webHostEnv = _webHostEnv;
+            mapper = _mapper;
         }
 
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> AddPicture(BookPictureViewModel pictureView)
+        public async Task<IActionResult> AddPicture(BookPictureViewModel pictureView, CancellationToken token)
         {
             var serverRootPath = webHostEnv.ContentRootPath;
             pictureView.Id = Guid.NewGuid();
-            var picture = Mapper.Map<BookPictureViewModel, BookPictures>(pictureView);
+            var picture = mapper.Map<BookPictures>(pictureView);
             if (pictureView.Picture.Length > 0)
             {
                 using (var stream = new MemoryStream())
@@ -42,7 +44,7 @@ namespace Library.Controllers
                 }
             }
 
-            await this.pictureServices.AddPicture(picture, serverRootPath, Constants.ImagesDirectory);
+            await this.pictureServices.AddPicture(picture, serverRootPath, Constants.ImagesDirectory, token);
             return Ok();
         }
 
@@ -57,13 +59,13 @@ namespace Library.Controllers
 
         [AllowAnonymous]
         [HttpGet("GetBookPictures")]
-        public async Task<ActionResult<List<BookPictureViewModel>>> GetBookPictures(Guid bookId)
+        public async Task<ActionResult<List<BookPictureViewModel>>> GetBookPictures(Guid bookId, CancellationToken token)
         {
             var serverRootPath = webHostEnv.ContentRootPath;
-            var pictures = await this.pictureServices.GetBookPictures(bookId);
+            var pictures = await this.pictureServices.GetBookPictures(bookId, token);
             if(pictures != null)
             {
-                var picturesViewModels = Mapper.Map<List<BookPictures>, List<BookPictureViewModel>>(pictures);
+                var picturesViewModels = mapper.Map<List<BookPictureViewModel>>(pictures);
                 return Ok(picturesViewModels);
             }
             return NotFound(); 
@@ -71,11 +73,11 @@ namespace Library.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpDelete]
-        public async Task<IActionResult> DeletePicture(Guid pictureId)
+        public async Task<IActionResult> DeletePicture(Guid pictureId, CancellationToken token)
         {
             var serverRootPath = webHostEnv.ContentRootPath;
             var picture = await this.pictureServices.GetPictureAsync(pictureId, serverRootPath);
-            await this.pictureServices.Delete(picture, serverRootPath);
+            await this.pictureServices.Delete(picture, serverRootPath, token);
             return Ok();
         }
 

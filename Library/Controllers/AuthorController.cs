@@ -14,18 +14,20 @@ namespace Library.Controllers
     {
         private readonly IAuthorServices _authorServices;
 
-        public AuthorController(IAuthorServices authorServices)
+        private readonly IMapper _mapper;
+
+        public AuthorController(IAuthorServices authorServices, IMapper mapper)
         {
             _authorServices = authorServices;
+            _mapper = mapper;
         }
-
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> CreateAuthor(AuthorViewModel author)
+        public async Task<IActionResult> CreateAuthor(AuthorViewModel author, CancellationToken token)
         {
-            var objAuthor = Mapper.Map<AuthorViewModel, Author>(author);
-            await this._authorServices.AddAsync(objAuthor);
+            var objAuthor = _mapper.Map<Author>(author);
+            await this._authorServices.AddAsync(objAuthor, token);
             return Ok();
         }
 
@@ -35,7 +37,7 @@ namespace Library.Controllers
         {
             var listOfAuthor =  this._authorServices.GetPaginatedList(pageIndex, pageSize);
             var paginatedViewModelList = new PaginatedList<AuthorViewModel>(
-                Mapper.Map<List<Author>, List<AuthorViewModel>>(listOfAuthor.Items),
+                _mapper.Map<List<AuthorViewModel>>(listOfAuthor.Items),
                 listOfAuthor.PageIndex,
                 listOfAuthor.TotalPages);
             
@@ -44,19 +46,19 @@ namespace Library.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpDelete]
-        public async Task<IActionResult> Delete(Guid authorId)
+        public async Task<IActionResult> Delete(Guid authorId, CancellationToken token)
         {
             var author = await this._authorServices.GetByIdAsync(authorId);
-            await this._authorServices.Delete(author);
+            await this._authorServices.Delete(author, token);
             return Ok();
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPut]
-        public async Task<IActionResult> Update(AuthorViewModel author)
+        public async Task<IActionResult> Update(AuthorViewModel author, CancellationToken token)
         {
-            Author objAuthor = Mapper.Map<AuthorViewModel, Author>(author);
-            await this._authorServices.Update(objAuthor);
+            Author objAuthor = _mapper.Map<Author>(author);
+            await this._authorServices.Update(objAuthor, token);
             return Ok();
         }
 
@@ -65,17 +67,17 @@ namespace Library.Controllers
         public async Task<ActionResult<AuthorViewModel>> GetById(Guid authorId)
         {
             var objAuthor = await this._authorServices.GetByIdAsync(authorId);
-            var author = Mapper.Map<Author, AuthorViewModel>(objAuthor);
+            var author = _mapper.Map<AuthorViewModel>(objAuthor);
             return  Ok(author);
         }
 
         [AllowAnonymous]
         [HttpGet("FindByName")]
-        public async Task<ActionResult<List<AuthorViewModel>>> GetByName(string name)
+        public async Task<ActionResult<List<AuthorViewModel>>> GetByName(string name, CancellationToken token)
         {
-            var authors = (await this._authorServices.GetAuthorByName(name)).ToList();
+            var authors = (await this._authorServices.GetAuthorByName(name, token)).ToList();
 
-            var authorViewModels = Mapper.Map<List<Author>, List<AuthorViewModel>>(authors);
+            var authorViewModels = _mapper.Map<List<AuthorViewModel>>(authors);
             return Ok(authorViewModels);
         
         }
