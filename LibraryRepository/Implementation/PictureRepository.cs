@@ -15,7 +15,8 @@ public class PictureRepository : IPictureRepository<BookPictures>
         _dbSet = _context.Set<BookPictures>();
     }
 
-    public async Task AddAsync(BookPictures picture, string serverRootPath, string pathToImagesDirectory)
+    public async Task AddAsync(BookPictures picture, string serverRootPath, 
+                            string pathToImagesDirectory, CancellationToken cancellationToken)
     {
         if (picture.PictureBytes == null)
         {
@@ -23,16 +24,16 @@ public class PictureRepository : IPictureRepository<BookPictures>
         }
 
         picture.Path = Path.Combine(pathToImagesDirectory, picture.Id + "." + picture.FileExtension);
-        await _dbSet.AddAsync(picture);
-        await _context.SaveChangesAsync();
+        await _dbSet.AddAsync(picture, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         var fullPath = Path.Combine(serverRootPath, picture.Path);
         File.WriteAllBytes(fullPath, picture.PictureBytes);
     }
 
-    public async Task<BookPictures> GetAsync(Guid pictureId, string serverRootPath)
+    public async Task<BookPictures> GetAsync(Guid pictureId, string serverRootPath, CancellationToken cancellationToken)
     {
-        var picture = await _dbSet.FirstOrDefaultAsync(x => x.Id == pictureId);
+        var picture = await _dbSet.FirstOrDefaultAsync(x => x.Id == pictureId, cancellationToken);
         
         if (picture == null)
         {
@@ -55,7 +56,7 @@ public class PictureRepository : IPictureRepository<BookPictures>
         _dbSet.Remove(picture);
     }
 
-    public async Task<List<BookPictures>> ToListByPredicateAsync(Expression<Func<BookPictures, bool>> predicate) 
-        => await _dbSet.Where(predicate).ToListAsync();
+    public async Task<List<BookPictures>> ToListByPredicateAsync(Expression<Func<BookPictures, bool>> predicate, CancellationToken cancellationToken) 
+        => await _dbSet.Where(predicate).ToListAsync(cancellationToken);
 
 }
