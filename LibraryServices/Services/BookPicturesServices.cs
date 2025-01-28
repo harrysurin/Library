@@ -26,7 +26,8 @@ public class BookPicturesServices : IBookPicturesServices
         return picture;
     }
     
-    public async Task AddPicture(BookPictures picture, string serverRootPath, string pathToImagesDirectory)
+    public async Task AddPicture(BookPictures picture, string serverRootPath, 
+                                string pathToImagesDirectory, CancellationToken cancellationToken)
     {
         var skImage = SKImage.FromEncodedData(picture.PictureBytes);
         if (skImage == null)
@@ -39,21 +40,21 @@ public class BookPicturesServices : IBookPicturesServices
         picture.FileExtension = format;
 
         await _unitOfWork.BookPictures.AddAsync(picture, serverRootPath, pathToImagesDirectory);
-        await _unitOfWork.CompleteAsync();
+        await _unitOfWork.CompleteAsync(cancellationToken);
     }
 
-    public async Task Delete(BookPictures picture, string serverRootPath)
+    public async Task Delete(BookPictures picture, string serverRootPath, CancellationToken cancellationToken)
     {
         if(picture != null)
         {
             throw new ArgumentNullException();
         }
         _unitOfWork.BookPictures.Delete(picture, serverRootPath);
-        await _unitOfWork.CompleteAsync();
+        await _unitOfWork.CompleteAsync(cancellationToken);
     }
 
-    public async Task<List<BookPictures>> GetBookPictures(Guid bookId)
+    public async Task<List<BookPictures>> GetBookPictures(Guid bookId, CancellationToken cancellationToken)
     {
-        return await _unitOfWork.BookPictures.ToListByPredicateAsync(x => x.BookId == bookId);
+        return await _unitOfWork.BookPictures.ToListByPredicateAsync(x => x.BookId == bookId, cancellationToken);
     }
 }

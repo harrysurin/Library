@@ -23,9 +23,9 @@ namespace Library.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> SendEmail(int rentalPeriod)
+        public async Task<IActionResult> SendEmail(int rentalPeriod, CancellationToken token)
         {
-            var ListOfRent = await this.emailServices.OverdueRent(rentalPeriod);
+            var ListOfRent = await this.emailServices.OverdueRent(rentalPeriod, token);
             for(int i = 0; i < ListOfRent.Count; i++)
             {
                 await this.emailServices.SendEmailAsync(

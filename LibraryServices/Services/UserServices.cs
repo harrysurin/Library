@@ -12,7 +12,8 @@ public class UserServices : IUserServices
         userManager = _userManager;
     }
 
-    public async Task<IEnumerable<User>> GetAllAsync() => await userManager.Users.ToListAsync();
+    public async Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken) 
+        => await userManager.Users.ToListAsync(cancellationToken);
 
     public async Task<IdentityResult> AddAsync(User user, string password) => await userManager.CreateAsync(user, password);
 

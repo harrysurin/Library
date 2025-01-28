@@ -15,8 +15,8 @@ public class AuthorService : IAuthorServices
         _validator = validator;
     }
 
-    public async Task<IEnumerable<Author>> GetAllAsync()
-        => await _unitOfWork.Authors.GetAllAsync();
+    public async Task<IEnumerable<Author>> GetAllAsync(CancellationToken cancellationToken)
+        => await _unitOfWork.Authors.GetAllAsync(cancellationToken);
     
     public async Task<Author?> GetByIdAsync(Guid id)
     {
@@ -30,21 +30,21 @@ public class AuthorService : IAuthorServices
             return author;
         }
     }    
-    public async Task AddAsync(Author author)
+    public async Task AddAsync(Author author, CancellationToken cancellationToken)
     {   
         _validator.ValidateAndThrow(author);
-        await _unitOfWork.Authors.AddAsync(author);
-        await _unitOfWork.CompleteAsync();
+        await _unitOfWork.Authors.AddAsync(author, cancellationToken);
+        await _unitOfWork.CompleteAsync(cancellationToken);
     }
 
-    public async Task Update(Author author)
+    public async Task Update(Author author, CancellationToken cancellationToken)
     {
         _validator.ValidateAndThrow(author);
         _unitOfWork.Authors.Update(author);
-        await _unitOfWork.CompleteAsync();
+        await _unitOfWork.CompleteAsync(cancellationToken);
     }
 
-    public async Task Delete(Author author)
+    public async Task Delete(Author author, CancellationToken cancellationToken)
     {
         if(author == null)
         {
@@ -53,17 +53,17 @@ public class AuthorService : IAuthorServices
         else
         {
             _unitOfWork.Authors.Delete(author);
-            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CompleteAsync(cancellationToken);
         }
     }
 
-    public async Task<IEnumerable<Author>> GetAuthorByName(string authorName)
+    public async Task<IEnumerable<Author>> GetAuthorByName(string authorName, CancellationToken cancellationToken)
     {
         authorName = authorName.Trim();
         return await _unitOfWork.Authors.ToListByPredicateAsync(x 
             => String.Equals(x.FirstName, authorName, StringComparison.OrdinalIgnoreCase) 
                 || String.Equals(x.LastName, authorName, StringComparison.OrdinalIgnoreCase)
-                || String.Equals(x.FirstName + " " + x.LastName, authorName, StringComparison.OrdinalIgnoreCase));
+                || String.Equals(x.FirstName + " " + x.LastName, authorName, StringComparison.OrdinalIgnoreCase), cancellationToken);
     }
 
     public PaginatedList<Author> GetPaginatedList(int pageIndex, int pageSize)

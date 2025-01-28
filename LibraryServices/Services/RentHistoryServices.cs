@@ -16,10 +16,10 @@ public class RentHistoryService : IRentHistoryServices
         _validator = validator;
     }
 
-    public async Task<IEnumerable<RentHistory>> GetAllAsync()
-    => await _unitOfWork.RentHistory.GetAllAsync();
+    public async Task<IEnumerable<RentHistory>> GetAllAsync(CancellationToken cancellationToken)
+    => await _unitOfWork.RentHistory.GetAllAsync(cancellationToken);
 
-    public async Task BookRent(Guid userId, Guid bookId)
+    public async Task BookRent(Guid userId, Guid bookId, CancellationToken cancellationToken)
     {
         RentHistory rentHistory = new RentHistory()
         {
@@ -30,14 +30,14 @@ public class RentHistoryService : IRentHistoryServices
             DateOfReturn = null
         };
         _validator.ValidateAndThrow(rentHistory);
-        await _unitOfWork.RentHistory.AddAsync(rentHistory);
-        await _unitOfWork.CompleteAsync();
+        await _unitOfWork.RentHistory.AddAsync(rentHistory, cancellationToken);
+        await _unitOfWork.CompleteAsync(cancellationToken);
     }
 
-    public async Task ReturnBook(Guid bookId, Guid userId)
+    public async Task ReturnBook(Guid bookId, Guid userId, CancellationToken cancellationToken)
     {
         var rentHistory = await _unitOfWork.RentHistory
-            .FirstOrDefaultAsync(x => x.BookId == bookId && x.DateOfReturn == null && x.UserId == userId);
+            .FirstOrDefaultAsync(x => x.BookId == bookId && x.DateOfReturn == null && x.UserId == userId, cancellationToken);
 
         if(rentHistory == null)
         {
@@ -46,28 +46,28 @@ public class RentHistoryService : IRentHistoryServices
         else 
         {
             rentHistory.DateOfReturn = DateTime.Now;
-            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CompleteAsync(cancellationToken);
         }
         
     }
 
-    public async Task<bool> IsAvailableToRent(Guid bookId)
+    public async Task<bool> IsAvailableToRent(Guid bookId, CancellationToken cancellationToken)
     {
         var rentHistory = await _unitOfWork.RentHistory
-            .FirstOrDefaultAsync(x => x.BookId == bookId && x.DateOfReturn == null);
+            .FirstOrDefaultAsync(x => x.BookId == bookId && x.DateOfReturn == null, cancellationToken);
 
         return rentHistory != null;
     }
 
-    public async Task<List<RentHistory>> GetUserRentHistory(Guid userId)
+    public async Task<List<RentHistory>> GetUserRentHistory(Guid userId, CancellationToken cancellationToken)
     {
-        return await _unitOfWork.RentHistory.ToListByPredicateAsync(x => x.UserId == userId);
+        return await _unitOfWork.RentHistory.ToListByPredicateAsync(x => x.UserId == userId, cancellationToken);
     }
 
-    public async Task Delete(RentHistory rentHistory) 
+    public async Task Delete(RentHistory rentHistory, CancellationToken cancellationToken) 
     {
         _unitOfWork.RentHistory.Delete(rentHistory);
-        await _unitOfWork.CompleteAsync();
+        await _unitOfWork.CompleteAsync(cancellationToken);
     }
 
     public async Task<RentHistory?> GetByIdAsync(Guid id) => await _unitOfWork.RentHistory.GetByIdAsync(id);

@@ -15,14 +15,14 @@ public class BookService : IBookServices
         _validator = validator;
     }
 
-    public async Task<IEnumerable<Book>> GetAllAsync()
-        => await _unitOfWork.Books.GetAllAsync();
+    public async Task<IEnumerable<Book>> GetAllAsync(CancellationToken cancellationToken)
+        => await _unitOfWork.Books.GetAllAsync(cancellationToken);
     
-    public async Task AddAsync(Book book)
+    public async Task AddAsync(Book book, CancellationToken cancellationToken)
     { 
         _validator.ValidateAndThrow(book);
-        await _unitOfWork.Books.AddAsync(book);
-        await _unitOfWork.CompleteAsync();
+        await _unitOfWork.Books.AddAsync(book, cancellationToken);
+        await _unitOfWork.CompleteAsync(cancellationToken);
     }
 
     public async Task<Book?> GetByIdAsync(Guid id)
@@ -38,14 +38,14 @@ public class BookService : IBookServices
         }
     }
 
-    public async Task Update(Book book)
+    public async Task Update(Book book, CancellationToken cancellationToken)
     {
         _validator.ValidateAndThrow(book);
         _unitOfWork.Books.Update(book);
-        await _unitOfWork.CompleteAsync();
+        await _unitOfWork.CompleteAsync(cancellationToken);
     }
 
-    public async Task Delete(Book book)
+    public async Task Delete(Book book, CancellationToken cancellationToken)
     {
         if(book == null)
         {
@@ -54,13 +54,13 @@ public class BookService : IBookServices
         else
         {
             _unitOfWork.Books.Delete(book);
-            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CompleteAsync(cancellationToken);
         }
     }
 
-    public async Task<Book?> GetBookByISBN(string ISBN)
+    public async Task<Book?> GetBookByISBN(string ISBN, CancellationToken cancellationToken)
     {
-        var book = await _unitOfWork.Books.FirstOrDefaultAsync(x => x.ISBN == ISBN);
+        var book = await _unitOfWork.Books.FirstOrDefaultAsync(x => x.ISBN == ISBN, cancellationToken);
         if(book == null)
         {
             throw new ArgumentNullException();
@@ -69,9 +69,9 @@ public class BookService : IBookServices
         return book;
     }
 
-    public async Task<List<Book>> GetBooksByAuthor(Guid authorId)
+    public async Task<List<Book>> GetBooksByAuthor(Guid authorId, CancellationToken cancellationToken)
     {
-        return await _unitOfWork.Books.ToListByPredicateAsync(x => x.AuthorId == authorId);
+        return await _unitOfWork.Books.ToListByPredicateAsync(x => x.AuthorId == authorId, cancellationToken);
     }
 
     public PaginatedList<Book> GetPaginatedListByAuthorId(int pageIndex, int pageSize, Guid authorId)

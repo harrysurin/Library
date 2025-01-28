@@ -32,7 +32,7 @@ public class EmailServices : IEmailServices
     }
 
 
-    public async Task SendEmailAsync(string email, string subject, string message)
+    public async Task SendEmailAsync(string email, string subject, string message, CancellationToken cancellationToken)
         {
             var emailMessage = new MimeMessage();
 
@@ -51,17 +51,17 @@ public class EmailServices : IEmailServices
                     int.Parse(_configuration["Email:SmtpServerPort"]));
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
 
-                await client.AuthenticateAsync(_emailFrom, _password);
-                await client.SendAsync(emailMessage);
+                await client.AuthenticateAsync(_emailFrom, _password, cancellationToken);
+                await client.SendAsync(emailMessage, cancellationToken);
 
                 await client.DisconnectAsync(true);
             }
         }
 
-    public async Task<List<RentHistory>> OverdueRent(int rentalPeriod)
+    public async Task<List<RentHistory>> OverdueRent(int rentalPeriod, CancellationToken cancellationToken)
     {
         DateTime overdue = DateTime.Today.AddDays(-rentalPeriod);
-        var ListOfRent = await unitOfWork.RentHistory.ToListByPredicateAsync(x => x.DateOfReturn == null || x.DateOfRent == overdue);
+        var ListOfRent = await unitOfWork.RentHistory.ToListByPredicateAsync(x => x.DateOfReturn == null || x.DateOfRent == overdue, cancellationToken);
         return ListOfRent;
     }
 

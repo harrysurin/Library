@@ -7,7 +7,7 @@ namespace LibraryServices.Interfaces
 {
     public interface IUserServices
     {
-        Task<IEnumerable<User>> GetAllAsync();
+        Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken = default);
         Task<IdentityResult> AddAsync(User user, string password);
         Task DeleteAsync(User user);
         Task UpdateAsync(User user);

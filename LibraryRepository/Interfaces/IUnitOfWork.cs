@@ -8,5 +8,5 @@ public interface IUnitOfWork : IDisposable
     IRepository<Book> Books { get; }
     IRepository<RentHistory> RentHistory { get; }
     IPictureRepository<BookPictures> BookPictures { get; }
-    Task<int> CompleteAsync();
+    Task<int> CompleteAsync(CancellationToken cancellationToken = default);
 }

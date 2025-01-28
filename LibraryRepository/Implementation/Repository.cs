@@ -13,15 +13,18 @@ public class Repository<T> : IRepository<T> where T : class
         _context = context;
         _dbSet = _context.Set<T>();
     }
-    public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
+    public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
+        => await _dbSet.ToListAsync(cancellationToken);
+        
     public async Task<T?> GetByIdAsync(Guid id) => await _dbSet.FindAsync(id);
-    public async Task AddAsync(T entity) => await _dbSet.AddAsync(entity);
+    public async Task AddAsync(T entity, CancellationToken cancellationToken = default)
+         => await _dbSet.AddAsync(entity, cancellationToken);
     public void Update(T entity) => _dbSet.Update(entity);
     public void Delete(T entity) => _dbSet.Remove(entity);
-    public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate) 
-        => await _dbSet.FirstOrDefaultAsync(predicate);
-    public async Task<List<T>> ToListByPredicateAsync(Expression<Func<T, bool>> predicate) 
-        => await _dbSet.Where(predicate).ToListAsync();
+    public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default) 
+        => await _dbSet.FirstOrDefaultAsync(predicate, cancellationToken);
+    public async Task<List<T>> ToListByPredicateAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default) 
+        => await _dbSet.Where(predicate).ToListAsync(cancellationToken);
 
     public PaginatedList<T> GetPaginatedList<TKey>(int pageIndex, int pageSize,
                  Expression<Func<T, bool>>? filterPredicate, Func<T, TKey> orderKeySelector)
