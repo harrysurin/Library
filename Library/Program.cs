@@ -5,12 +5,16 @@ using Microsoft.OpenApi.Models;
 using LibraryServices.Validation;
 using LibraryRepository.Interfaces;
 using LibraryRepository.Implementations;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration["ConnectionString"];
 builder.Services.AddDbContext<LibraryContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString),
+    ServiceLifetime.Transient);
 
 
 builder.Services.AddTransient<IRepository<Author>, Repository<Author>>();
@@ -30,11 +34,35 @@ builder.Services.AddTransient<AuthorValidator>();
 builder.Services.AddTransient<BookValidator>();
 builder.Services.AddTransient<RentHistoryValidator>();
 
+builder.Services.AddTransient<TokenService>();
+
 
 builder.Services.AddAutoMapper(typeof(AuthorProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(BookProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(RentHistoryProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(BookPictureProfile).Assembly);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateActor = false,
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        RequireExpirationTime = true,
+        ValidateIssuerSigningKey = true,
+        ClockSkew = TimeSpan.Zero,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+});
+
+builder.Services.AddAuthorization();
+
 builder.Services.AddControllers();
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
@@ -70,6 +98,20 @@ builder.Services.AddIdentityApiEndpoints<User>()
     .AddRoles<Role>()
     .AddEntityFrameworkStores<LibraryContext>();
 
+
+builder.Services.AddAuthorization(options =>
+{
+   
+    options.AddPolicy("AdminOnly", policy => 
+        policy.RequireRole("Admin"));
+
+    
+    options.AddPolicy("Authorize", policy => 
+        policy.RequireRole("User", "Admin"));
+
+});
+
+
 var app = builder.Build();
 app.MapIdentityApi<User>();
 
@@ -80,6 +122,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
