@@ -28,11 +28,12 @@ public class ServicesUnitTests
         var mockUnitOfWork = new Mock<IUnitOfWork>();
         var mockRepository = new Mock<IRepository<Author>>();
         var authorValidator = new AuthorValidator();
+        CancellationToken token = new CancellationToken();
 
         
 
         mockRepository
-            .Setup(repo => repo.ToListByPredicateAsync(It.IsAny<Expression<Func<Author, bool>>>()))
+            .Setup(repo => repo.ToListByPredicateAsync(It.IsAny<Expression<Func<Author, bool>>>(), token))
             .ReturnsAsync(new List<Author>() { expectedAuthor });
 
         mockUnitOfWork
@@ -41,7 +42,7 @@ public class ServicesUnitTests
 
         var services = new AuthorService(mockUnitOfWork.Object, authorValidator);
 
-        var result = (await services.GetAuthorByName(FirstName)).FirstOrDefault();
+        var result = (await services.GetAuthorByName(FirstName, token)).FirstOrDefault();
 
         Assert.Same(expectedAuthor, result);
     }
@@ -52,6 +53,7 @@ public class ServicesUnitTests
         var mockUnitOfWork = new Mock<IUnitOfWork>();
         var mockRepository = new Mock<IRepository<Author>>();
         var authorValidator = new AuthorValidator();
+        CancellationToken token = new CancellationToken();
 
         var author1 = new Author
         {
@@ -78,12 +80,12 @@ public class ServicesUnitTests
             .Returns(mockRepository.Object);
 
         mockRepository
-            .Setup(repo => repo.GetAllAsync())
+            .Setup(repo => repo.GetAllAsync(token))
             .ReturnsAsync(authors);
         
         var services = new AuthorService(mockUnitOfWork.Object, authorValidator);
 
-        var result = await services.GetAllAsync();
+        var result = await services.GetAllAsync(token);
 
         Assert.Same(authors, result);
     }
@@ -94,6 +96,7 @@ public class ServicesUnitTests
         var mockUnitOfWork = new Mock<IUnitOfWork>();
         var mockRepository = new Mock<IRepository<Author>>();
         var authorValidator = new AuthorValidator();
+        CancellationToken token = new CancellationToken();
         
         var author1 = new Author
         {
@@ -128,6 +131,7 @@ public class ServicesUnitTests
         var mockUnitOfWork = new Mock<IUnitOfWork>();
         var mockRepository = new Mock<IRepository<Author>>();
         var authorValidator = new AuthorValidator();
+        CancellationToken token = new CancellationToken();
 
         var author1 = new Author
         {
@@ -145,16 +149,16 @@ public class ServicesUnitTests
             .Returns(mockRepository.Object);
 
         mockRepository
-            .Setup(i => i.AddAsync(It.IsAny<Author>()))
+            .Setup(i => i.AddAsync(It.IsAny<Author>(), token))
             .Callback((Author author) => itemsInserted.Add(author));
         
          mockUnitOfWork
-            .Setup(i => i.CompleteAsync())
+            .Setup(i => i.CompleteAsync(token))
             .Callback(() => {});
 
         var services = new AuthorService(mockUnitOfWork.Object, authorValidator);
 
-        await services.AddAsync(author1);
+        await services.AddAsync(author1, token);
 
         Assert.Same(author1, itemsInserted.First());
     }
@@ -165,6 +169,7 @@ public class ServicesUnitTests
         var mockUnitOfWork = new Mock<IUnitOfWork>();
         var mockRepository = new Mock<IRepository<Author>>();
         var authorValidator = new AuthorValidator();
+        CancellationToken token = new CancellationToken();
 
         var author1 = new Author
         {
@@ -186,12 +191,12 @@ public class ServicesUnitTests
             .Callback((Author author) => authors.Remove(author));
         
          mockUnitOfWork
-            .Setup(i => i.CompleteAsync())
+            .Setup(i => i.CompleteAsync(token))
             .Callback(() => {});
 
         var services = new AuthorService(mockUnitOfWork.Object, authorValidator);
 
-        await services.Delete(author1);
+        await services.Delete(author1, token);
 
         Assert.Empty(authors);
 
@@ -203,6 +208,7 @@ public class ServicesUnitTests
         var mockUnitOfWork = new Mock<IUnitOfWork>();
         var mockRepository = new Mock<IRepository<Author>>();
         var authorValidator = new AuthorValidator();
+        CancellationToken token = new CancellationToken();
 
         var author1 = new Author
         {
@@ -234,7 +240,7 @@ public class ServicesUnitTests
                 => authors[authors.FindIndex(x => x.AuthorId == author.AuthorId)] = author);
         
         mockUnitOfWork
-            .Setup(i => i.CompleteAsync())
+            .Setup(i => i.CompleteAsync(token))
             .Callback(() => {});
 
         var services = new AuthorService(mockUnitOfWork.Object, authorValidator);
@@ -248,7 +254,7 @@ public class ServicesUnitTests
             DateOfBirth = new DateTime(1970, 3, 15)
         };
 
-        await services.Update(author3);
+        await services.Update(author3, token);
 
         Assert.Equal(authors[0].FirstName, authors[1].FirstName);
 
