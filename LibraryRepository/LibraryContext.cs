@@ -10,6 +10,7 @@ public class LibraryContext : IdentityDbContext<User, Role, Guid>
     public DbSet<Book> Books => Set<Book>();
     public DbSet<RentHistory> RentHistory => Set<RentHistory>();
     public DbSet<BookPictures> BookPictures => Set<BookPictures>();
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     public LibraryContext() : base() {}
 
