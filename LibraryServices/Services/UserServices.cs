@@ -12,6 +12,20 @@ public class UserServices : IUserServices
         userManager = _userManager;
     }
 
+    public async Task<bool> RegisterUser(string email, string password, string role)
+    {
+        var user = new User
+        {
+            UserName = email,
+            Email = email
+        };
+
+        await userManager.AddToRoleAsync(user, role);
+
+        var result = await userManager.CreateAsync(user, password);
+        return result.Succeeded;
+    }
+
     public async Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken) 
         => await userManager.Users.ToListAsync(cancellationToken);
 
