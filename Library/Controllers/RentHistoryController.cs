@@ -37,7 +37,7 @@ namespace Library.Controllers
             return paginatedViewModelList;
         }
 
-        [Authorize]
+        [Authorize(Policy = "Authorize")]
         [HttpPost]
         public async Task<IActionResult> NewRentHistory(Guid bookId, CancellationToken token)
         {
@@ -47,7 +47,7 @@ namespace Library.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Authorize(Policy = "Authorize")]
         [HttpPost("ReturnBook")]
         public async Task<IActionResult> ReturnBook(Guid rentId, CancellationToken token)
         {
@@ -58,7 +58,7 @@ namespace Library.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Authorize(Policy = "Authorize")]
         [HttpGet]
         public async Task<ActionResult<PaginatedList<RentHistoryViewModel>>> GetUserRentHistory(int pageIndex, int pageSize)
         {
@@ -68,7 +68,7 @@ namespace Library.Controllers
             return Ok(paginatedViewModelList);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy= "Admin")]
         [HttpGet("GetUserRentHistoryByAdmin")]
         public async Task<ActionResult<PaginatedList<RentHistoryViewModel>>> GetUserRentHistoryByAdmin(int pageIndex, int pageSize, Guid userId)
         {

@@ -29,7 +29,7 @@ namespace Library.Controllers
             mapper = _mapper;
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy= "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateBook(BookViewModel book, CancellationToken token)
         {
@@ -53,7 +53,7 @@ namespace Library.Controllers
             return Ok();
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy= "Admin")]
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid bookId, CancellationToken token)
         {
@@ -62,7 +62,7 @@ namespace Library.Controllers
             return Ok();
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy= "Admin")]
         [HttpPut]
         public async Task<IActionResult> Update(BookViewModel book, CancellationToken token)
         {

@@ -21,7 +21,7 @@ namespace Library.Controllers
             emailServices = _emailServices;
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy= "Admin")]
         [HttpPost]
         public async Task<IActionResult> SendEmail(int rentalPeriod, CancellationToken token)
         {

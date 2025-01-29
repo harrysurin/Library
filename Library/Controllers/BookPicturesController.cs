@@ -28,7 +28,7 @@ namespace Library.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy= "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddPicture(BookPictureViewModel pictureView, CancellationToken token)
         {
@@ -71,7 +71,7 @@ namespace Library.Controllers
             return NotFound(); 
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy= "Admin")]
         [HttpDelete]
         public async Task<IActionResult> DeletePicture(Guid pictureId, CancellationToken token)
         {

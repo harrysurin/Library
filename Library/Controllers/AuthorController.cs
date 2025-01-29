@@ -22,7 +22,7 @@ namespace Library.Controllers
             _mapper = mapper;
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy= "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateAuthor(AuthorViewModel author, CancellationToken token)
         {
@@ -44,7 +44,7 @@ namespace Library.Controllers
             return Ok(paginatedViewModelList);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy= "Admin")]
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid authorId, CancellationToken token)
         {
@@ -53,7 +53,7 @@ namespace Library.Controllers
             return Ok();
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy= "Admin")]
         [HttpPut]
         public async Task<IActionResult> Update(AuthorViewModel author, CancellationToken token)
         {
