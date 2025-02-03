@@ -11,18 +11,20 @@ public class AuthController : ControllerBase
    
     private readonly UserManager<User> _userManager;
     private readonly IUserServices _userServices;
-    private readonly TokenService _tokenService;
-    private readonly LibraryContext _context;
+    private readonly ITokenService _tokenService;
+    private readonly IRefreshTokensService _refreshTokens;
 
     public AuthController(UserManager<User> userManager,
         IUserServices userServices,
-        TokenService tokenService,
-        LibraryContext context)
+        ITokenService tokenService,
+        IRefreshTokensService refreshTokens
+        )
     {
         _userManager = userManager;
         _userServices = userServices;
         _tokenService = tokenService;
-        _context = context;
+        _refreshTokens = refreshTokens;
+        
     }
 
     [HttpPost("Register")]
@@ -36,7 +38,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginViewModel model)
+    public async Task<IActionResult> Login([FromBody] LoginViewModel model, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
@@ -52,8 +54,7 @@ public class AuthController : ControllerBase
             Expires = DateTime.UtcNow.AddDays(_tokenService.GetRefreshTokenExpirationDays())
         };
 
-        _context.RefreshTokens.Add(refreshTokenEntity);
-        await _context.SaveChangesAsync();
+        await _refreshTokens.AddAsync(refreshTokenEntity, cancellationToken);
 
         return Ok(new
         {
@@ -64,7 +65,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request)
+    public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
     {
         var principal = _tokenService.GetPrincipalFromExpiredToken(request.AccessToken);
         var username = principal.Identity.Name;
@@ -73,8 +74,8 @@ public class AuthController : ControllerBase
         if (user == null)
             return Unauthorized();
 
-        var refreshToken = await _context.RefreshTokens
-            .FirstOrDefaultAsync(rt => rt.Token == request.RefreshToken && rt.UserId == user.Id);
+        var refreshToken = await _refreshTokens
+            .GetTokenAsync(request.RefreshToken, user.Id, cancellationToken);
 
         if (refreshToken == null || refreshToken.IsExpired)
             return Unauthorized();
@@ -84,16 +85,15 @@ public class AuthController : ControllerBase
         var newRefreshToken = _tokenService.GenerateRefreshToken();
 
         
-        _context.RefreshTokens.Remove(refreshToken);
+        await _refreshTokens.Delete(refreshToken);
         
-       
-        _context.RefreshTokens.Add(new RefreshToken
+        RefreshToken newToken = new RefreshToken
         {
             UserId = user.Id,
             Token = newRefreshToken,
             Expires = DateTime.UtcNow.AddDays(_tokenService.GetRefreshTokenExpirationDays())
-        });
-        await _context.SaveChangesAsync();
+        };
+        await _refreshTokens.AddAsync(newToken, cancellationToken);
 
         return Ok(new
         {
