@@ -8,5 +8,6 @@ public interface IUnitOfWork : IDisposable
     IRepository<Book> Books { get; }
     IRepository<RentHistory> RentHistory { get; }
     IPictureRepository<BookPictures> BookPictures { get; }
+    IRefreshTokensRepository RefreshTokens { get; }
     Task<int> CompleteAsync(CancellationToken cancellationToken = default);
 }
