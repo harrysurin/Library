@@ -5,7 +5,7 @@ using LibraryServices.Interfaces;
 public class UsersInitializer
 {
     public static async Task InitializeAsync(IUserServices userServices,
-        string adminEmail, string adminPassword)
+        string adminEmail, string adminPassword, CancellationToken token)
     {
         if (await userServices.FindByNameAsync(adminEmail) == null)
         {
