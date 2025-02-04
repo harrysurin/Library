@@ -21,6 +21,7 @@ builder.Services.AddTransient<IRepository<Author>, Repository<Author>>();
 builder.Services.AddTransient<IRepository<Book>, Repository<Book>>();
 builder.Services.AddTransient<IRepository<RentHistory>, Repository<RentHistory>>();
 builder.Services.AddTransient<IPictureRepository<BookPictures>, PictureRepository>();
+builder.Services.AddTransient<IRefreshTokensRepository, RefreshTokensRepository>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddTransient<IAuthorServices, AuthorService>();
@@ -34,7 +35,8 @@ builder.Services.AddTransient<AuthorValidator>();
 builder.Services.AddTransient<BookValidator>();
 builder.Services.AddTransient<RentHistoryValidator>();
 
-builder.Services.AddTransient<TokenService>();
+builder.Services.AddTransient<ITokenService, TokenService>();
+builder.Services.AddTransient<IRefreshTokensService, RefreshTokensServices>();
 
 
 builder.Services.AddAutoMapper(typeof(AuthorProfile).Assembly);
