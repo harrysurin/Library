@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Authentication;
 
 public record ExceptionResponse(HttpStatusCode StatusCode, string Description);
 
@@ -31,6 +32,7 @@ public class ExceptionHandlingMiddleware
 
         ExceptionResponse response = exception switch
         {
+            AuthenticationException => new ExceptionResponse(HttpStatusCode.BadRequest, "Wrong login or password"),
             ApplicationException _ => new ExceptionResponse(HttpStatusCode.BadRequest, "Application exception occurred."),
             ArgumentNullException => new ExceptionResponse(HttpStatusCode.BadRequest, "ArgumentNullException: " + exception.Message),
             ArgumentException _ => new ExceptionResponse(HttpStatusCode.BadRequest, "Wrong arguments"),
