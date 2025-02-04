@@ -40,65 +40,14 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginViewModel model, CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByEmailAsync(model.Email);
-        if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
-            return Unauthorized();
+        return Ok(await _refreshTokens.GetAuthTokensAsync(model.Email, model.Password, cancellationToken));
 
-        var accessToken = _tokenService.GenerateAccessToken(user);
-        var refreshToken = _tokenService.GenerateRefreshToken();
-
-        var refreshTokenEntity = new RefreshToken
-        {
-            UserId = user.Id,
-            Token = refreshToken,
-            Expires = DateTime.UtcNow.AddDays(_tokenService.GetRefreshTokenExpirationDays())
-        };
-
-        await _refreshTokens.AddAsync(refreshTokenEntity, cancellationToken);
-
-        return Ok(new
-        {
-            AccessToken = accessToken,
-            RefreshToken = refreshToken,
-            ExpiresIn = _tokenService.GetAccessTokenExpirationMinutes() * 60
-        });
     }
 
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
     {
-        var principal = _tokenService.GetPrincipalFromExpiredToken(request.AccessToken);
-        var username = principal.Identity.Name;
-        var user = await _userManager.FindByNameAsync(username);
 
-        if (user == null)
-            return Unauthorized();
-
-        var refreshToken = await _refreshTokens
-            .GetTokenAsync(request.RefreshToken, user.Id, cancellationToken);
-
-        if (refreshToken == null || refreshToken.IsExpired)
-            return Unauthorized();
-
-        
-        var newAccessToken = _tokenService.GenerateAccessToken(user);
-        var newRefreshToken = _tokenService.GenerateRefreshToken();
-
-        
-        await _refreshTokens.Delete(refreshToken);
-        
-        RefreshToken newToken = new RefreshToken
-        {
-            UserId = user.Id,
-            Token = newRefreshToken,
-            Expires = DateTime.UtcNow.AddDays(_tokenService.GetRefreshTokenExpirationDays())
-        };
-        await _refreshTokens.AddAsync(newToken, cancellationToken);
-
-        return Ok(new
-        {
-            AccessToken = newAccessToken,
-            RefreshToken = newRefreshToken
-        });
+        return Ok(await _refreshTokens.RefreshAccessTokenAsync(request.AccessToken, request.RefreshToken, cancellationToken));
     }
 }
