@@ -67,8 +67,16 @@ public class BookPicturesServices : IBookPicturesServices
         await _unitOfWork.CompleteAsync(cancellationToken);
     }
 
+     public async Task Delete(Guid pictureId, string serverRootPath, CancellationToken cancellationToken)
+     {
+         var picture = await this.GetPictureAsync(pictureId, serverRootPath);
+         await this.Delete(picture, serverRootPath, cancellationToken);
+     }
+
     public async Task<List<BookPictures>> GetBookPictures(Guid bookId, CancellationToken cancellationToken)
     {
-        return await _unitOfWork.BookPictures.ToListByPredicateAsync(x => x.BookId == bookId, cancellationToken);
+
+        return  await _unitOfWork.BookPictures.ToListByPredicateAsync(x => x.BookId == bookId, cancellationToken);
+
     }
 }

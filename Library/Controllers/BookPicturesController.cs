@@ -55,21 +55,15 @@ namespace Library.Controllers
         {
 
             var pictures = await this.pictureServices.GetBookPictures(bookId, token);
-            if(pictures != null)
-            {
-                var picturesViewModels = mapper.Map<List<BookPictureViewModel>>(pictures);
-                return Ok(picturesViewModels);
-            }
-            return NotFound(); 
+            var picturesViewModels = mapper.Map<List<BookPictureViewModel>>(pictures);
+            return Ok(picturesViewModels); 
         }
 
         [Authorize(Policy= "AdminOnly")]
         [HttpDelete]
         public async Task<IActionResult> DeletePicture(Guid pictureId, CancellationToken token)
         {
-            var serverRootPath = webHostEnv.ContentRootPath;
-            var picture = await this.pictureServices.GetPictureAsync(pictureId, serverRootPath);
-            await this.pictureServices.Delete(picture, serverRootPath, token);
+            await this.pictureServices.Delete(pictureId, webHostEnv.ContentRootPath, token);
             return Ok();
         }
 
