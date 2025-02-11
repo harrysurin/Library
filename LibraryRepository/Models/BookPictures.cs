@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 namespace LibraryRepository.Models;
 
 public class BookPictures
@@ -7,6 +9,8 @@ public class BookPictures
     public Guid BookId { get; set; }
 
     public string Path { get; set; }
+
+    public IFormFile? Picture { get; set; }
 
     public byte[]? PictureBytes { get; set; }
 
