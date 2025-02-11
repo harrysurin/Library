@@ -29,6 +29,20 @@ public class BookPicturesServices : IBookPicturesServices
     public async Task AddPicture(BookPictures picture, string serverRootPath, 
                                 string pathToImagesDirectory, CancellationToken cancellationToken)
     {
+        if (picture.Picture == null)
+        {
+            throw new ArgumentNullException("Picture isn't uploaded");
+        }
+        
+        if (picture.Picture.Length > 0)
+        {
+            using (var stream = new MemoryStream())
+            {
+                picture.Picture.CopyTo(stream);
+                picture.PictureBytes = stream.ToArray();
+            }
+        }
+
         var skImage = SKImage.FromEncodedData(picture.PictureBytes);
         if (skImage == null)
         {

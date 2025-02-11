@@ -27,23 +27,12 @@ namespace Library.Controllers
             mapper = _mapper;
         }
 
-        private ActionResult<PaginatedList<RentHistoryViewModel>> GetRentHistory(int pageIndex, int pageSize, Guid userId)
-        {
-            var listOfRent =  this.rentServices.GetPaginatedList(pageIndex, pageSize, userId);
-            var paginatedViewModelList = new PaginatedList<RentHistoryViewModel>(
-                mapper.Map<List<RentHistoryViewModel>>(listOfRent.Items),
-                listOfRent.PageIndex,
-                listOfRent.TotalPages);
-            return paginatedViewModelList;
-        }
-
         [Authorize(Policy = "Authorize")]
         [HttpPost]
         public async Task<IActionResult> NewRentHistory(Guid bookId, CancellationToken token)
         {
-            User? user = await userServices.FindByNameAsync(User.Identity.Name);
-            Guid userId = user.Id;
-            await this.rentServices.BookRent(userId, bookId, token);
+            string username = User.Identity.Name;
+            await this.rentServices.BookRent(username, bookId, token);
             return Ok();
         }
 
@@ -51,10 +40,7 @@ namespace Library.Controllers
         [HttpPost("ReturnBook")]
         public async Task<IActionResult> ReturnBook(Guid rentId, CancellationToken token)
         {
-            User? user = await userServices.FindByNameAsync(User.Identity.Name);
-            Guid userId = user.Id;
-            var rentHistory = await this.rentServices.GetByIdAsync(rentId);
-            await this.rentServices.ReturnBook(rentHistory.BookId, userId, token);
+            await this.rentServices.ReturnBook(User.Identity.Name, rentId, token);
             return Ok();
         }
 
@@ -62,18 +48,27 @@ namespace Library.Controllers
         [HttpGet]
         public async Task<ActionResult<PaginatedList<RentHistoryViewModel>>> GetUserRentHistory(int pageIndex, int pageSize)
         {
-            var user = await userServices.FindByNameAsync(User.Identity.Name);
-            Guid userId = user.Id;
-            var paginatedViewModelList = this.GetRentHistory(pageIndex, pageSize, userId);
+            var listOfRent = await this.rentServices.GetPaginatedList(pageIndex, pageSize, User.Identity.Name);
+            var paginatedViewModelList = new PaginatedList<RentHistoryViewModel>(
+                mapper.Map<List<RentHistoryViewModel>>(listOfRent.Items),
+                listOfRent.PageIndex,
+                listOfRent.TotalPages);
             return Ok(paginatedViewModelList);
+            
         }
 
-        [Authorize(Policy= "Admin")]
+        [Authorize(Policy= "AdminOnly")]
         [HttpGet("GetUserRentHistoryByAdmin")]
         public async Task<ActionResult<PaginatedList<RentHistoryViewModel>>> GetUserRentHistoryByAdmin(int pageIndex, int pageSize, Guid userId)
         {
-            var paginatedViewModelList = this.GetRentHistory(pageIndex, pageSize, userId);
+            var listOfRent =  this.rentServices.GetPaginatedList(pageIndex, pageSize, userId);
+            var paginatedViewModelList = new PaginatedList<RentHistoryViewModel>(
+                mapper.Map<List<RentHistoryViewModel>>(listOfRent.Items),
+                listOfRent.PageIndex,
+                listOfRent.TotalPages);
             return Ok(paginatedViewModelList);
         }
+
+
     }
 }

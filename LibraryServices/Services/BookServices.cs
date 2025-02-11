@@ -8,11 +8,15 @@ using LibraryRepository.Interfaces;
 public class BookService : IBookServices
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IBookPicturesServices bookPicturesService;
     private readonly BookValidator _validator;
-    public BookService(IUnitOfWork unitOfWork, BookValidator validator)
+    public BookService(IUnitOfWork unitOfWork,
+        BookValidator validator,
+        IBookPicturesServices _bookPicturesService)
     {
         _unitOfWork = unitOfWork;
         _validator = validator;
+        bookPicturesService = _bookPicturesService;
     }
 
     public async Task<IEnumerable<Book>> GetAllAsync(CancellationToken cancellationToken)
@@ -23,6 +27,16 @@ public class BookService : IBookServices
         _validator.ValidateAndThrow(book);
         await _unitOfWork.Books.AddAsync(book, cancellationToken);
         await _unitOfWork.CompleteAsync(cancellationToken);
+    }
+
+    public async Task AddAsync(Book book, BookPictures picture, string serverRootPath,
+                                        string pathToImagesDirectory, CancellationToken cancellationToken)
+    {
+        await this.AddAsync(book, cancellationToken);
+        if (picture != null)
+        {
+            await bookPicturesService.AddPicture(picture, serverRootPath, pathToImagesDirectory, cancellationToken);
+        }
     }
 
     public async Task<Book?> GetByIdAsync(Guid id)

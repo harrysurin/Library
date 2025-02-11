@@ -9,11 +9,13 @@ public class RentHistoryService : IRentHistoryServices
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly RentHistoryValidator _validator;
+    private readonly IUserServices userServices;
 
-    public RentHistoryService(IUnitOfWork unitOfWork, RentHistoryValidator validator)
+    public RentHistoryService(IUnitOfWork unitOfWork, RentHistoryValidator validator, IUserServices _userServices)
     {
         _unitOfWork = unitOfWork;
         _validator = validator;
+        userServices = _userServices;
     }
 
     public async Task<IEnumerable<RentHistory>> GetAllAsync(CancellationToken cancellationToken)
@@ -34,6 +36,13 @@ public class RentHistoryService : IRentHistoryServices
         await _unitOfWork.CompleteAsync(cancellationToken);
     }
 
+    public async Task BookRent(string username, Guid bookId, CancellationToken token)
+    {
+        User? user = await userServices.FindByNameAsync(username);
+        Guid userId = user.Id;
+        await this.BookRent(userId, bookId, token);
+    }
+
     public async Task ReturnBook(Guid bookId, Guid userId, CancellationToken cancellationToken)
     {
         var rentHistory = await _unitOfWork.RentHistory
@@ -49,6 +58,14 @@ public class RentHistoryService : IRentHistoryServices
             await _unitOfWork.CompleteAsync(cancellationToken);
         }
         
+    }
+
+    public async Task ReturnBook(string username, Guid rentId, CancellationToken cancellationToken)
+    {
+        var rentHistory = await this.GetByIdAsync(rentId);
+        User? user = await userServices.FindByNameAsync(username);
+        Guid userId = user.Id;
+        await this.ReturnBook(rentHistory.BookId, userId, cancellationToken);
     }
 
     public async Task<bool> IsAvailableToRent(Guid bookId, CancellationToken cancellationToken)
@@ -76,6 +93,13 @@ public class RentHistoryService : IRentHistoryServices
     {
         return _unitOfWork.RentHistory
             .GetPaginatedList(pageIndex, pageSize, x => x.UserId == userId, x => x.DateOfRent);
+    }
+
+    public async Task<PaginatedList<RentHistory>> GetPaginatedList(int pageIndex, int pageSize, string username)
+    {
+        var user = await userServices.FindByNameAsync(username);
+        Guid userId = user.Id;
+        return this.GetPaginatedList(pageIndex, pageSize, userId);
     }
 
 }

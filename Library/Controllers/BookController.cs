@@ -29,31 +29,19 @@ namespace Library.Controllers
             mapper = _mapper;
         }
 
-        [Authorize(Policy= "Admin")]
+        [Authorize(Policy= "AdminOnly")]
         [HttpPost]
         public async Task<IActionResult> CreateBook(BookViewModel book, CancellationToken token)
         {
             var objBook = mapper.Map<Book>(book);
-            await this.bookServices.AddAsync(objBook, token);
-
             var picture = mapper.Map<BookPictures>(book);
-
-            if (book.BookPicture != null && book.BookPicture.Length > 0)
-            {
-                using (var stream = new MemoryStream())
-                {
-                    book.BookPicture.CopyTo(stream);
-                    picture.PictureBytes = stream.ToArray();
-                }
-            }
-
             var serverRootPath = webHostEnv.ContentRootPath;
-            await this.picturesServices.AddPicture(picture, serverRootPath, Constants.ImagesDirectory, token);
+            await this.bookServices.AddAsync(objBook, picture, serverRootPath, Constants.ImagesDirectory, token);
 
             return Ok();
         }
 
-        [Authorize(Policy= "Admin")]
+        [Authorize(Policy= "AdminOnly")]
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid bookId, CancellationToken token)
         {
@@ -62,7 +50,7 @@ namespace Library.Controllers
             return Ok();
         }
 
-        [Authorize(Policy= "Admin")]
+        [Authorize(Policy= "AdminOnly")]
         [HttpPut]
         public async Task<IActionResult> Update(BookViewModel book, CancellationToken token)
         {
