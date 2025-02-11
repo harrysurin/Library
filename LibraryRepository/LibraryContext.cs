@@ -29,6 +29,7 @@ public class LibraryContext : IdentityDbContext<User, Role, Guid>
         modelBuilder.Entity<Book>().Property(x => x.Title).IsRequired();
         modelBuilder.Entity<RentHistory>().HasKey(x => x.Id);
         modelBuilder.Entity<BookPictures>().HasKey(x => x.Id);
+        modelBuilder.Entity<BookPictures>().Ignore(x => x.Picture);
         modelBuilder.Entity<BookPictures>().Ignore(x => x.PictureBytes);
         modelBuilder.Entity<BookPictures>().Ignore(x => x.FileExtension);
         var dbSeeder = new DbSeeder(modelBuilder);
